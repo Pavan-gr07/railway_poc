@@ -46,11 +46,13 @@ interface DisplayBoard {
 
 interface Announcement {
   id: string;
-  text: string;
+  audioBlob: Blob;
+  audioUrl: string;
   language: "english" | "hindi" | "regional";
-  fontSize: "small" | "medium" | "large";
+  duration: number;
   color: string;
   isActive: boolean;
+  isPlaying: boolean;
   mode: "manual" | "auto";
   createdAt: string;
 }
