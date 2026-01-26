@@ -77,14 +77,16 @@ export default function Dashboard() {
     },
   ]);
 
-  const [operationMode, setOperationMode] = useState<"auto" | "manual">("manual");
+  const [operationMode, setOperationMode] = useState<"auto" | "manual">(
+    "manual",
+  );
   const [newAnnouncement, setNewAnnouncement] = useState("");
-  const [selectedLanguage, setSelectedLanguage] = useState<"english" | "hindi" | "regional">(
-    "english"
-  );
-  const [selectedFontSize, setSelectedFontSize] = useState<"small" | "medium" | "large">(
-    "medium"
-  );
+  const [selectedLanguage, setSelectedLanguage] = useState<
+    "english" | "hindi" | "regional"
+  >("english");
+  const [selectedFontSize, setSelectedFontSize] = useState<
+    "small" | "medium" | "large"
+  >("medium");
   const [selectedColor, setSelectedColor] = useState("#FF6B6B");
 
   const handleCreateAnnouncement = () => {
@@ -108,8 +110,8 @@ export default function Dashboard() {
   const handlePlayAnnouncement = (id: string) => {
     setAnnouncements(
       announcements.map((ann) =>
-        ann.id === id ? { ...ann, isActive: !ann.isActive } : ann
-      )
+        ann.id === id ? { ...ann, isActive: !ann.isActive } : ann,
+      ),
     );
     // Audio playback would be handled here
   };
@@ -218,7 +220,9 @@ export default function Dashboard() {
         <h1 className="text-3xl font-bold text-foreground">
           Integrated Passenger Information System
         </h1>
-        <p className="text-muted-foreground mt-1">Central Display Center (CDC) Dashboard</p>
+        <p className="text-muted-foreground mt-1">
+          Central Display Center (CDC) Dashboard
+        </p>
       </div>
 
       {/* Status Cards */}
@@ -234,12 +238,14 @@ export default function Dashboard() {
                   ? "bg-warning/5 border-warning/20 text-foreground"
                   : card.status === "error"
                     ? "bg-destructive/5 border-destructive/20 text-foreground"
-                    : "bg-card border-border text-foreground"
+                    : "bg-card border-border text-foreground",
             )}
           >
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">{card.label}</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  {card.label}
+                </p>
                 <p className="text-2xl font-bold mt-2">{card.value}</p>
               </div>
               <div
@@ -251,7 +257,7 @@ export default function Dashboard() {
                       ? "bg-warning/10 text-warning"
                       : card.status === "error"
                         ? "bg-destructive/10 text-destructive"
-                        : "bg-muted text-foreground"
+                        : "bg-muted text-foreground",
                 )}
               >
                 {card.icon}
@@ -264,7 +270,9 @@ export default function Dashboard() {
       {/* Mode Toggle & Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="bg-card border border-border rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-foreground mb-4">Operation Mode</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-4">
+            Operation Mode
+          </h3>
           <div className="space-y-2">
             <button
               onClick={() => setOperationMode("auto")}
@@ -272,7 +280,7 @@ export default function Dashboard() {
                 "w-full flex items-center justify-between px-4 py-3 rounded-lg transition-colors font-medium",
                 operationMode === "auto"
                   ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-foreground hover:bg-muted/80"
+                  : "bg-muted text-foreground hover:bg-muted/80",
               )}
             >
               <span>Auto Mode</span>
@@ -284,7 +292,7 @@ export default function Dashboard() {
                 "w-full flex items-center justify-between px-4 py-3 rounded-lg transition-colors font-medium",
                 operationMode === "manual"
                   ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-foreground hover:bg-muted/80"
+                  : "bg-muted text-foreground hover:bg-muted/80",
               )}
             >
               <span>Manual Mode</span>
@@ -294,7 +302,9 @@ export default function Dashboard() {
         </div>
 
         <div className="bg-card border border-border rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-foreground mb-4">Quick Actions</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-4">
+            Quick Actions
+          </h3>
           <button className="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-border hover:bg-muted transition-colors font-medium text-foreground">
             <span>Send to Displays</span>
             <Send className="w-4 h-4" />
@@ -302,13 +312,18 @@ export default function Dashboard() {
         </div>
 
         <div className="bg-card border border-border rounded-lg p-4">
-          <h3 className="text-sm font-semibold text-foreground mb-4">System Health</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-4">
+            System Health
+          </h3>
           <div className="flex items-end gap-2">
             <span className="text-3xl font-bold text-success">94%</span>
             <span className="text-sm text-muted-foreground pb-1">healthy</span>
           </div>
           <div className="w-full bg-muted rounded-full h-2 mt-3">
-            <div className="bg-success h-full rounded-full" style={{ width: "94%" }} />
+            <div
+              className="bg-success h-full rounded-full"
+              style={{ width: "94%" }}
+            />
           </div>
         </div>
       </div>
@@ -319,7 +334,9 @@ export default function Dashboard() {
         <div className="lg:col-span-2 bg-card border border-border rounded-lg overflow-hidden">
           <div className="px-6 py-4 border-b border-border flex items-center gap-2">
             <Train className="w-5 h-5 text-primary" />
-            <h2 className="text-lg font-semibold text-foreground">Recent Trains</h2>
+            <h2 className="text-lg font-semibold text-foreground">
+              Recent Trains
+            </h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -348,16 +365,22 @@ export default function Dashboard() {
                     <td className="px-6 py-4 text-sm font-semibold text-foreground">
                       {train.trainNo}
                     </td>
-                    <td className="px-6 py-4 text-sm text-foreground">{train.destination}</td>
-                    <td className="px-6 py-4 text-sm text-foreground">{train.platform}</td>
-                    <td className="px-6 py-4 text-sm text-foreground">{train.eta}</td>
+                    <td className="px-6 py-4 text-sm text-foreground">
+                      {train.destination}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-foreground">
+                      {train.platform}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-foreground">
+                      {train.eta}
+                    </td>
                     <td className="px-6 py-4 text-sm">
                       <span
                         className={cn(
                           "inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium",
                           train.displayStatus === "sent"
                             ? "bg-success/10 text-success"
-                            : "bg-warning/10 text-warning"
+                            : "bg-warning/10 text-warning",
                         )}
                       >
                         {train.displayStatus === "sent" ? (
@@ -383,16 +406,24 @@ export default function Dashboard() {
           </div>
           <div className="space-y-3">
             <div className="p-3 rounded-lg bg-warning/5 border border-warning/20">
-              <p className="text-sm font-medium text-foreground">Display Board Offline</p>
-              <p className="text-xs text-muted-foreground mt-1">AVDB-04 (Main Concourse) offline</p>
+              <p className="text-sm font-medium text-foreground">
+                Display Board Offline
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                AVDB-04 (Main Concourse) offline
+              </p>
             </div>
             <div className="p-3 rounded-lg bg-warning/5 border border-warning/20">
               <p className="text-sm font-medium text-foreground">Sync Failed</p>
-              <p className="text-xs text-muted-foreground mt-1">3 trains pending sync to displays</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                3 trains pending sync to displays
+              </p>
             </div>
             <div className="p-3 rounded-lg bg-success/5 border border-success/20">
               <p className="text-sm font-medium text-foreground">API Healthy</p>
-              <p className="text-xs text-muted-foreground mt-1">All REST API endpoints responding</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                All REST API endpoints responding
+              </p>
             </div>
           </div>
         </div>
@@ -402,13 +433,15 @@ export default function Dashboard() {
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         <div className="px-6 py-4 border-b border-border flex items-center gap-2">
           <Volume2 className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold text-foreground">Announcements</h2>
+          <h2 className="text-lg font-semibold text-foreground">
+            Announcements
+          </h2>
           <span
             className={cn(
               "ml-auto text-xs font-semibold px-3 py-1 rounded-full",
               operationMode === "auto"
                 ? "bg-primary/10 text-primary"
-                : "bg-secondary/10 text-secondary"
+                : "bg-secondary/10 text-secondary",
             )}
           >
             {operationMode.toUpperCase()} MODE
@@ -418,7 +451,9 @@ export default function Dashboard() {
         <div className="p-6 space-y-6">
           {/* Create New Announcement */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-foreground">Create New Announcement</h3>
+            <h3 className="text-sm font-semibold text-foreground">
+              Create New Announcement
+            </h3>
             <div className="space-y-3">
               <textarea
                 value={newAnnouncement}
@@ -444,7 +479,7 @@ export default function Dashboard() {
                     value={selectedLanguage}
                     onChange={(e) =>
                       setSelectedLanguage(
-                        e.target.value as "english" | "hindi" | "regional"
+                        e.target.value as "english" | "hindi" | "regional",
                       )
                     }
                     disabled={operationMode === "auto"}
@@ -463,7 +498,9 @@ export default function Dashboard() {
                   <select
                     value={selectedFontSize}
                     onChange={(e) =>
-                      setSelectedFontSize(e.target.value as "small" | "medium" | "large")
+                      setSelectedFontSize(
+                        e.target.value as "small" | "medium" | "large",
+                      )
                     }
                     disabled={operationMode === "auto"}
                     className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary"
@@ -490,7 +527,9 @@ export default function Dashboard() {
                 <div className="flex flex-col justify-end">
                   <button
                     onClick={handleCreateAnnouncement}
-                    disabled={operationMode === "auto" || !newAnnouncement.trim()}
+                    disabled={
+                      operationMode === "auto" || !newAnnouncement.trim()
+                    }
                     className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-sm"
                   >
                     <Plus className="w-4 h-4" />
@@ -530,7 +569,7 @@ export default function Dashboard() {
                               ? "text-sm"
                               : announcement.fontSize === "large"
                                 ? "text-lg font-semibold"
-                                : "text-base font-medium"
+                                : "text-base font-medium",
                           )}
                         >
                           {announcement.text}
@@ -550,7 +589,7 @@ export default function Dashboard() {
                               "text-xs px-2 py-1 rounded",
                               announcement.isActive
                                 ? "bg-success/10 text-success"
-                                : "bg-muted text-muted-foreground"
+                                : "bg-muted text-muted-foreground",
                             )}
                           >
                             {announcement.isActive ? "Playing" : "Stopped"}
@@ -563,15 +602,21 @@ export default function Dashboard() {
 
                       <div className="flex gap-2 flex-shrink-0">
                         <button
-                          onClick={() => handlePlayAnnouncement(announcement.id)}
+                          onClick={() =>
+                            handlePlayAnnouncement(announcement.id)
+                          }
                           disabled={operationMode === "auto"}
                           className={cn(
                             "p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
                             announcement.isActive
                               ? "bg-success/10 text-success hover:bg-success/20"
-                              : "bg-muted text-foreground hover:bg-muted/80"
+                              : "bg-muted text-foreground hover:bg-muted/80",
                           )}
-                          title={announcement.isActive ? "Stop Announcement" : "Play Announcement"}
+                          title={
+                            announcement.isActive
+                              ? "Stop Announcement"
+                              : "Play Announcement"
+                          }
                         >
                           {announcement.isActive ? (
                             <Pause className="w-4 h-4" />
@@ -580,7 +625,9 @@ export default function Dashboard() {
                           )}
                         </button>
                         <button
-                          onClick={() => handleDeleteAnnouncement(announcement.id)}
+                          onClick={() =>
+                            handleDeleteAnnouncement(announcement.id)
+                          }
                           disabled={operationMode === "auto"}
                           className="p-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           title="Delete Announcement"
@@ -601,8 +648,9 @@ export default function Dashboard() {
                 ℹ️ Auto Mode Active
               </p>
               <p className="text-xs text-muted-foreground">
-                In auto mode, announcements are triggered automatically based on NTES data and
-                configured time-based rules. Manual controls are disabled.
+                In auto mode, announcements are triggered automatically based on
+                NTES data and configured time-based rules. Manual controls are
+                disabled.
               </p>
             </div>
           )}
@@ -613,7 +661,9 @@ export default function Dashboard() {
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         <div className="px-6 py-4 border-b border-border flex items-center gap-2">
           <BarChart3 className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold text-foreground">Display Board Health</h2>
+          <h2 className="text-lg font-semibold text-foreground">
+            Display Board Health
+          </h2>
         </div>
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -626,13 +676,15 @@ export default function Dashboard() {
                     ? "bg-success/5 border-success/20"
                     : board.status === "error"
                       ? "bg-destructive/5 border-destructive/20"
-                      : "bg-muted/5 border-border"
+                      : "bg-muted/5 border-border",
                 )}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <p className="font-semibold text-foreground">{board.id}</p>
-                    <p className="text-xs text-muted-foreground">{board.location}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {board.location}
+                    </p>
                   </div>
                   <div
                     className={cn(
@@ -641,21 +693,27 @@ export default function Dashboard() {
                         ? "bg-success animate-pulse"
                         : board.status === "error"
                           ? "bg-destructive"
-                          : "bg-muted"
+                          : "bg-muted",
                     )}
                   />
                 </div>
                 <div className="space-y-2">
                   <div>
-                    <p className="text-xs text-muted-foreground">Health Score</p>
+                    <p className="text-xs text-muted-foreground">
+                      Health Score
+                    </p>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-lg font-bold text-foreground">{board.healthScore}%</span>
+                      <span className="text-lg font-bold text-foreground">
+                        {board.healthScore}%
+                      </span>
                       {board.healthScore >= 90 && (
                         <TrendingUp className="w-4 h-4 text-success" />
                       )}
                     </div>
                   </div>
-                  <p className="text-xs text-muted-foreground">Last sync: {board.lastSync}</p>
+                  <p className="text-xs text-muted-foreground">
+                    Last sync: {board.lastSync}
+                  </p>
                 </div>
               </div>
             ))}

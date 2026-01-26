@@ -12,7 +12,9 @@ export default function Events() {
 
       <div className="bg-card border border-border rounded-lg p-12 text-center">
         <AlertCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-        <h2 className="text-xl font-semibold text-foreground mb-2">Event Log Module</h2>
+        <h2 className="text-xl font-semibold text-foreground mb-2">
+          Event Log Module
+        </h2>
         <p className="text-muted-foreground mb-6">
           This page will provide comprehensive event logging features:
         </p>

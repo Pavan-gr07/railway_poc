@@ -12,9 +12,12 @@ export default function Trains() {
 
       <div className="bg-card border border-border rounded-lg p-12 text-center">
         <Train className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-        <h2 className="text-xl font-semibold text-foreground mb-2">Train Management Module</h2>
+        <h2 className="text-xl font-semibold text-foreground mb-2">
+          Train Management Module
+        </h2>
         <p className="text-muted-foreground mb-6">
-          This page will contain comprehensive train management capabilities including:
+          This page will contain comprehensive train management capabilities
+          including:
         </p>
         <ul className="text-left max-w-md mx-auto text-muted-foreground space-y-2 mb-6">
           <li>• View and edit train schedules</li>

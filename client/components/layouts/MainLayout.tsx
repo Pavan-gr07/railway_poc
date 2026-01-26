@@ -36,7 +36,7 @@ export function MainLayout({ children }: MainLayoutProps) {
       <div
         className={cn(
           "fixed inset-y-0 left-0 z-50 flex flex-col bg-sidebar border-r border-sidebar-border transition-all duration-300 lg:relative lg:z-0",
-          sidebarOpen ? "w-64" : "w-0"
+          sidebarOpen ? "w-64" : "w-0",
         )}
       >
         {/* Header */}
@@ -72,7 +72,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                       "flex items-center gap-3 px-3 py-2 rounded-lg transition-all",
                       isActive
                         ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                        : "text-sidebar-foreground hover:bg-sidebar-accent"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent",
                     )}
                   >
                     <Icon className="w-5 h-5" />
@@ -120,9 +120,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-auto bg-background">
-          {children}
-        </div>
+        <div className="flex-1 overflow-auto bg-background">{children}</div>
       </div>
     </div>
   );
