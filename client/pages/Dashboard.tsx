@@ -10,8 +10,13 @@ import {
   Activity,
   Send,
   Pause,
+  Volume2,
+  Mic,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface StatusCard {
   label: string;
