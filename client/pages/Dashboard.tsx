@@ -58,7 +58,9 @@ export default function Dashboard() {
   const audioChunksRef = useRef<Blob[]>([]);
 
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [operationMode, setOperationMode] = useState<"auto" | "manual">("manual");
+  const [operationMode, setOperationMode] = useState<"auto" | "manual">(
+    "manual",
+  );
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [selectedLanguage, setSelectedLanguage] = useState<
@@ -133,14 +135,16 @@ export default function Dashboard() {
       // Stop playback
       setAnnouncements(
         announcements.map((ann) =>
-          ann.id === id ? { ...ann, isPlaying: false } : ann
+          ann.id === id ? { ...ann, isPlaying: false } : ann,
         ),
       );
     } else {
       // Start playback - stop all other playing announcements
       setAnnouncements((prevAnns) =>
         prevAnns.map((ann) =>
-          ann.id === id ? { ...ann, isPlaying: true } : { ...ann, isPlaying: false }
+          ann.id === id
+            ? { ...ann, isPlaying: true }
+            : { ...ann, isPlaying: false },
         ),
       );
 
@@ -148,7 +152,7 @@ export default function Dashboard() {
       audio.onended = () => {
         setAnnouncements((prevAnns) =>
           prevAnns.map((ann) =>
-            ann.id === id ? { ...ann, isPlaying: false } : ann
+            ann.id === id ? { ...ann, isPlaying: false } : ann,
           ),
         );
       };
@@ -507,7 +511,9 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <p className="text-sm font-medium text-foreground">
-                      {isRecording ? "Recording in progress..." : "Ready to record"}
+                      {isRecording
+                        ? "Recording in progress..."
+                        : "Ready to record"}
                     </p>
                     {isRecording && (
                       <p className="text-sm text-primary font-semibold mt-1">
@@ -590,7 +596,8 @@ export default function Dashboard() {
             </h3>
             {announcements.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-6">
-                No announcements recorded yet. Click "Start Recording" to create one.
+                No announcements recorded yet. Click "Start Recording" to create
+                one.
               </p>
             ) : (
               <div className="space-y-2">
@@ -683,8 +690,9 @@ export default function Dashboard() {
                 ℹ️ Auto Mode Active
               </p>
               <p className="text-xs text-muted-foreground">
-                In auto mode, announcements are triggered automatically based on NTES data and
-                configured time-based rules. Manual recording and playback controls are disabled.
+                In auto mode, announcements are triggered automatically based on
+                NTES data and configured time-based rules. Manual recording and
+                playback controls are disabled.
               </p>
             </div>
           )}
