@@ -266,11 +266,27 @@ export default function Dashboard() {
         <div className="bg-card border border-border rounded-lg p-4">
           <h3 className="text-sm font-semibold text-foreground mb-4">Operation Mode</h3>
           <div className="space-y-2">
-            <button className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-medium">
+            <button
+              onClick={() => setOperationMode("auto")}
+              className={cn(
+                "w-full flex items-center justify-between px-4 py-3 rounded-lg transition-colors font-medium",
+                operationMode === "auto"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-foreground hover:bg-muted/80"
+              )}
+            >
               <span>Auto Mode</span>
               <Zap className="w-4 h-4" />
             </button>
-            <button className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-colors font-medium">
+            <button
+              onClick={() => setOperationMode("manual")}
+              className={cn(
+                "w-full flex items-center justify-between px-4 py-3 rounded-lg transition-colors font-medium",
+                operationMode === "manual"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-foreground hover:bg-muted/80"
+              )}
+            >
               <span>Manual Mode</span>
               <Pause className="w-4 h-4" />
             </button>
