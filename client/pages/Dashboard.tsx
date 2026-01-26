@@ -12,13 +12,11 @@ import {
   Pause,
   Volume2,
   Mic,
-  Plus,
-  Trash2,
   Square,
-  Play,
+  Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 
 interface StatusCard {
   label: string;
@@ -46,83 +44,128 @@ interface DisplayBoard {
 
 interface Announcement {
   id: string;
-  audioBlob: Blob;
   audioUrl: string;
   language: "english" | "hindi" | "regional";
   duration: number;
   color: string;
-  isActive: boolean;
   isPlaying: boolean;
   mode: "manual" | "auto";
   createdAt: string;
 }
 
 export default function Dashboard() {
-  const [announcements, setAnnouncements] = useState<Announcement[]>([
-    {
-      id: "1",
-      text: "Platform 1 delayed by 10 minutes",
-      language: "english",
-      fontSize: "large",
-      color: "#FF6B6B",
-      isActive: true,
-      mode: "manual",
-      createdAt: "2 min ago",
-    },
-    {
-      id: "2",
-      text: "प्लेटफॉर्म 2 समय पर आ रहा है",
-      language: "hindi",
-      fontSize: "medium",
-      color: "#4ECDC4",
-      isActive: false,
-      mode: "manual",
-      createdAt: "5 min ago",
-    },
-  ]);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
-  const [operationMode, setOperationMode] = useState<"auto" | "manual">(
-    "manual",
-  );
-  const [newAnnouncement, setNewAnnouncement] = useState("");
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [operationMode, setOperationMode] = useState<"auto" | "manual">("manual");
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
   const [selectedLanguage, setSelectedLanguage] = useState<
     "english" | "hindi" | "regional"
   >("english");
-  const [selectedFontSize, setSelectedFontSize] = useState<
-    "small" | "medium" | "large"
-  >("medium");
   const [selectedColor, setSelectedColor] = useState("#FF6B6B");
+  const recordingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleCreateAnnouncement = () => {
-    if (!newAnnouncement.trim()) return;
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
 
-    const announcement: Announcement = {
-      id: Date.now().toString(),
-      text: newAnnouncement,
-      language: selectedLanguage,
-      fontSize: selectedFontSize,
-      color: selectedColor,
-      isActive: true,
-      mode: operationMode,
-      createdAt: "Just now",
-    };
+      mediaRecorder.ondataavailable = (event) => {
+        audioChunksRef.current.push(event.data);
+      };
 
-    setAnnouncements([announcement, ...announcements]);
-    setNewAnnouncement("");
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: "audio/webm",
+        });
+        const audioUrl = URL.createObjectURL(audioBlob);
+
+        const announcement: Announcement = {
+          id: Date.now().toString(),
+          audioUrl: audioUrl,
+          language: selectedLanguage,
+          duration: recordingTime,
+          color: selectedColor,
+          isPlaying: false,
+          mode: operationMode,
+          createdAt: "Just now",
+        };
+
+        setAnnouncements([announcement, ...announcements]);
+        setRecordingTime(0);
+
+        // Stop all tracks
+        stream.getTracks().forEach((track) => track.stop());
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+
+      // Timer for recording duration
+      recordingIntervalRef.current = setInterval(() => {
+        setRecordingTime((prev) => prev + 1);
+      }, 1000);
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+      alert("Unable to access microphone. Please check permissions.");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      if (recordingIntervalRef.current) {
+        clearInterval(recordingIntervalRef.current);
+      }
+    }
   };
 
   const handlePlayAnnouncement = (id: string) => {
-    setAnnouncements(
-      announcements.map((ann) =>
-        ann.id === id ? { ...ann, isActive: !ann.isActive } : ann,
-      ),
-    );
-    // Audio playback would be handled here
+    const announcement = announcements.find((ann) => ann.id === id);
+    if (!announcement) return;
+
+    if (announcement.isPlaying) {
+      // Stop playback
+      setAnnouncements(
+        announcements.map((ann) =>
+          ann.id === id ? { ...ann, isPlaying: false } : ann
+        ),
+      );
+    } else {
+      // Start playback - stop all other playing announcements
+      setAnnouncements((prevAnns) =>
+        prevAnns.map((ann) =>
+          ann.id === id ? { ...ann, isPlaying: true } : { ...ann, isPlaying: false }
+        ),
+      );
+
+      const audio = new Audio(announcement.audioUrl);
+      audio.onended = () => {
+        setAnnouncements((prevAnns) =>
+          prevAnns.map((ann) =>
+            ann.id === id ? { ...ann, isPlaying: false } : ann
+          ),
+        );
+      };
+      audio.play();
+    }
   };
 
   const handleDeleteAnnouncement = (id: string) => {
     setAnnouncements(announcements.filter((ann) => ann.id !== id));
   };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
   // Mock data
   const statusCards: StatusCard[] = [
     {
@@ -433,12 +476,12 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Announcements Management */}
+      {/* Audio Announcements Management */}
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         <div className="px-6 py-4 border-b border-border flex items-center gap-2">
           <Volume2 className="w-5 h-5 text-primary" />
           <h2 className="text-lg font-semibold text-foreground">
-            Announcements
+            Voice Announcements
           </h2>
           <span
             className={cn(
@@ -453,28 +496,57 @@ export default function Dashboard() {
         </div>
 
         <div className="p-6 space-y-6">
-          {/* Create New Announcement */}
+          {/* Record New Announcement */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-foreground">
-              Create New Announcement
+              Record New Announcement
             </h3>
             <div className="space-y-3">
-              <textarea
-                value={newAnnouncement}
-                onChange={(e) => setNewAnnouncement(e.target.value)}
-                placeholder={`Enter announcement text (${
-                  selectedLanguage === "hindi"
-                    ? "Hindi"
-                    : selectedLanguage === "regional"
-                      ? "Regional Language"
-                      : "English"
-                })`}
-                disabled={operationMode === "auto"}
-                className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary"
-                rows={3}
-              />
+              {/* Recording Control */}
+              <div className="p-4 rounded-lg border border-border bg-muted/30">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      {isRecording ? "Recording in progress..." : "Ready to record"}
+                    </p>
+                    {isRecording && (
+                      <p className="text-sm text-primary font-semibold mt-1">
+                        {formatTime(recordingTime)}
+                      </p>
+                    )}
+                  </div>
+                  {isRecording && (
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-destructive rounded-full animate-pulse"></div>
+                      <span className="text-xs font-medium text-destructive">
+                        RECORDING
+                      </span>
+                    </div>
+                  )}
+                </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="flex gap-3">
+                  <button
+                    onClick={startRecording}
+                    disabled={isRecording || operationMode === "auto"}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                  >
+                    <Mic className="w-4 h-4" />
+                    Start Recording
+                  </button>
+                  <button
+                    onClick={stopRecording}
+                    disabled={!isRecording || operationMode === "auto"}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                  >
+                    <Square className="w-4 h-4" />
+                    Stop Recording
+                  </button>
+                </div>
+              </div>
+
+              {/* Configuration */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-muted-foreground mb-2">
                     Language
@@ -486,72 +558,39 @@ export default function Dashboard() {
                         e.target.value as "english" | "hindi" | "regional",
                       )
                     }
-                    disabled={operationMode === "auto"}
+                    disabled={isRecording || operationMode === "auto"}
                     className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <option value="english">English</option>
                     <option value="hindi">Hindi</option>
-                    <option value="regional">Regional</option>
+                    <option value="regional">Regional Language</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-xs font-medium text-muted-foreground mb-2">
-                    Font Size
-                  </label>
-                  <select
-                    value={selectedFontSize}
-                    onChange={(e) =>
-                      setSelectedFontSize(
-                        e.target.value as "small" | "medium" | "large",
-                      )
-                    }
-                    disabled={operationMode === "auto"}
-                    className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    <option value="small">Small</option>
-                    <option value="medium">Medium</option>
-                    <option value="large">Large</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-muted-foreground mb-2">
-                    Text Color
+                    Display Color
                   </label>
                   <input
                     type="color"
                     value={selectedColor}
                     onChange={(e) => setSelectedColor(e.target.value)}
-                    disabled={operationMode === "auto"}
+                    disabled={isRecording || operationMode === "auto"}
                     className="w-full h-10 rounded-lg border border-border cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   />
-                </div>
-
-                <div className="flex flex-col justify-end">
-                  <button
-                    onClick={handleCreateAnnouncement}
-                    disabled={
-                      operationMode === "auto" || !newAnnouncement.trim()
-                    }
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-sm"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Create
-                  </button>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Active Announcements */}
+          {/* Recorded Announcements */}
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-foreground">
-              Active Announcements ({announcements.length})
+              Recorded Announcements ({announcements.length})
             </h3>
             {announcements.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-6">
-                No announcements created yet
+                No announcements recorded yet. Click "Start Recording" to create one.
               </p>
             ) : (
               <div className="space-y-2">
@@ -566,37 +605,29 @@ export default function Dashboard() {
                         style={{ backgroundColor: announcement.color }}
                       />
                       <div className="flex-1 min-w-0">
-                        <p
-                          className={cn(
-                            "text-foreground break-words",
-                            announcement.fontSize === "small"
-                              ? "text-sm"
-                              : announcement.fontSize === "large"
-                                ? "text-lg font-semibold"
-                                : "text-base font-medium",
-                          )}
-                        >
-                          {announcement.text}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <Mic className="w-4 h-4 text-primary" />
+                          <p className="text-sm font-medium text-foreground">
+                            Audio Recording
+                          </p>
+                        </div>
                         <div className="flex items-center gap-3 mt-2 flex-wrap">
                           <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
                             {announcement.language.charAt(0).toUpperCase() +
                               announcement.language.slice(1)}
                           </span>
                           <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded">
-                            {announcement.fontSize.charAt(0).toUpperCase() +
-                              announcement.fontSize.slice(1)}{" "}
-                            Text
+                            {formatTime(announcement.duration)}
                           </span>
                           <span
                             className={cn(
                               "text-xs px-2 py-1 rounded",
-                              announcement.isActive
+                              announcement.isPlaying
                                 ? "bg-success/10 text-success"
                                 : "bg-muted text-muted-foreground",
                             )}
                           >
-                            {announcement.isActive ? "Playing" : "Stopped"}
+                            {announcement.isPlaying ? "Playing" : "Stopped"}
                           </span>
                           <span className="text-xs text-muted-foreground ml-auto">
                             {announcement.createdAt}
@@ -612,20 +643,20 @@ export default function Dashboard() {
                           disabled={operationMode === "auto"}
                           className={cn(
                             "p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
-                            announcement.isActive
+                            announcement.isPlaying
                               ? "bg-success/10 text-success hover:bg-success/20"
                               : "bg-muted text-foreground hover:bg-muted/80",
                           )}
                           title={
-                            announcement.isActive
-                              ? "Stop Announcement"
+                            announcement.isPlaying
+                              ? "Stop Playback"
                               : "Play Announcement"
                           }
                         >
-                          {announcement.isActive ? (
+                          {announcement.isPlaying ? (
                             <Pause className="w-4 h-4" />
                           ) : (
-                            <Mic className="w-4 h-4" />
+                            <Volume2 className="w-4 h-4" />
                           )}
                         </button>
                         <button
@@ -634,7 +665,7 @@ export default function Dashboard() {
                           }
                           disabled={operationMode === "auto"}
                           className="p-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                          title="Delete Announcement"
+                          title="Delete Recording"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -652,9 +683,8 @@ export default function Dashboard() {
                 ℹ️ Auto Mode Active
               </p>
               <p className="text-xs text-muted-foreground">
-                In auto mode, announcements are triggered automatically based on
-                NTES data and configured time-based rules. Manual controls are
-                disabled.
+                In auto mode, announcements are triggered automatically based on NTES data and
+                configured time-based rules. Manual recording and playback controls are disabled.
               </p>
             </div>
           )}
