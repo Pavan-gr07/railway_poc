@@ -398,6 +398,217 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Announcements Management */}
+      <div className="bg-card border border-border rounded-lg overflow-hidden">
+        <div className="px-6 py-4 border-b border-border flex items-center gap-2">
+          <Volume2 className="w-5 h-5 text-primary" />
+          <h2 className="text-lg font-semibold text-foreground">Announcements</h2>
+          <span
+            className={cn(
+              "ml-auto text-xs font-semibold px-3 py-1 rounded-full",
+              operationMode === "auto"
+                ? "bg-primary/10 text-primary"
+                : "bg-secondary/10 text-secondary"
+            )}
+          >
+            {operationMode.toUpperCase()} MODE
+          </span>
+        </div>
+
+        <div className="p-6 space-y-6">
+          {/* Create New Announcement */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-foreground">Create New Announcement</h3>
+            <div className="space-y-3">
+              <textarea
+                value={newAnnouncement}
+                onChange={(e) => setNewAnnouncement(e.target.value)}
+                placeholder={`Enter announcement text (${
+                  selectedLanguage === "hindi"
+                    ? "Hindi"
+                    : selectedLanguage === "regional"
+                      ? "Regional Language"
+                      : "English"
+                })`}
+                disabled={operationMode === "auto"}
+                className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary"
+                rows={3}
+              />
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-muted-foreground mb-2">
+                    Language
+                  </label>
+                  <select
+                    value={selectedLanguage}
+                    onChange={(e) =>
+                      setSelectedLanguage(
+                        e.target.value as "english" | "hindi" | "regional"
+                      )
+                    }
+                    disabled={operationMode === "auto"}
+                    className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="english">English</option>
+                    <option value="hindi">Hindi</option>
+                    <option value="regional">Regional</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-muted-foreground mb-2">
+                    Font Size
+                  </label>
+                  <select
+                    value={selectedFontSize}
+                    onChange={(e) =>
+                      setSelectedFontSize(e.target.value as "small" | "medium" | "large")
+                    }
+                    disabled={operationMode === "auto"}
+                    className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-muted-foreground mb-2">
+                    Text Color
+                  </label>
+                  <input
+                    type="color"
+                    value={selectedColor}
+                    onChange={(e) => setSelectedColor(e.target.value)}
+                    disabled={operationMode === "auto"}
+                    className="w-full h-10 rounded-lg border border-border cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                </div>
+
+                <div className="flex flex-col justify-end">
+                  <button
+                    onClick={handleCreateAnnouncement}
+                    disabled={operationMode === "auto" || !newAnnouncement.trim()}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-sm"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Create
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Active Announcements */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-foreground">
+              Active Announcements ({announcements.length})
+            </h3>
+            {announcements.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-6">
+                No announcements created yet
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {announcements.map((announcement) => (
+                  <div
+                    key={announcement.id}
+                    className="p-4 rounded-lg border border-border bg-muted/50 space-y-3"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className="w-4 h-4 rounded-full flex-shrink-0 mt-1"
+                        style={{ backgroundColor: announcement.color }}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p
+                          className={cn(
+                            "text-foreground break-words",
+                            announcement.fontSize === "small"
+                              ? "text-sm"
+                              : announcement.fontSize === "large"
+                                ? "text-lg font-semibold"
+                                : "text-base font-medium"
+                          )}
+                        >
+                          {announcement.text}
+                        </p>
+                        <div className="flex items-center gap-3 mt-2 flex-wrap">
+                          <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+                            {announcement.language.charAt(0).toUpperCase() +
+                              announcement.language.slice(1)}
+                          </span>
+                          <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded">
+                            {announcement.fontSize.charAt(0).toUpperCase() +
+                              announcement.fontSize.slice(1)}{" "}
+                            Text
+                          </span>
+                          <span
+                            className={cn(
+                              "text-xs px-2 py-1 rounded",
+                              announcement.isActive
+                                ? "bg-success/10 text-success"
+                                : "bg-muted text-muted-foreground"
+                            )}
+                          >
+                            {announcement.isActive ? "Playing" : "Stopped"}
+                          </span>
+                          <span className="text-xs text-muted-foreground ml-auto">
+                            {announcement.createdAt}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2 flex-shrink-0">
+                        <button
+                          onClick={() => handlePlayAnnouncement(announcement.id)}
+                          disabled={operationMode === "auto"}
+                          className={cn(
+                            "p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+                            announcement.isActive
+                              ? "bg-success/10 text-success hover:bg-success/20"
+                              : "bg-muted text-foreground hover:bg-muted/80"
+                          )}
+                          title={announcement.isActive ? "Stop Announcement" : "Play Announcement"}
+                        >
+                          {announcement.isActive ? (
+                            <Pause className="w-4 h-4" />
+                          ) : (
+                            <Mic className="w-4 h-4" />
+                          )}
+                        </button>
+                        <button
+                          onClick={() => handleDeleteAnnouncement(announcement.id)}
+                          disabled={operationMode === "auto"}
+                          className="p-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Delete Announcement"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {operationMode === "auto" && (
+            <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 space-y-2">
+              <p className="text-sm font-medium text-foreground">
+                ℹ️ Auto Mode Active
+              </p>
+              <p className="text-xs text-muted-foreground">
+                In auto mode, announcements are triggered automatically based on NTES data and
+                configured time-based rules. Manual controls are disabled.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Display Boards Health */}
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         <div className="px-6 py-4 border-b border-border flex items-center gap-2">
