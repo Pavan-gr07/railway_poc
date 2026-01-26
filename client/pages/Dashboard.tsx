@@ -42,7 +42,81 @@ interface DisplayBoard {
   healthScore: number;
 }
 
+interface Announcement {
+  id: string;
+  text: string;
+  language: "english" | "hindi" | "regional";
+  fontSize: "small" | "medium" | "large";
+  color: string;
+  isActive: boolean;
+  mode: "manual" | "auto";
+  createdAt: string;
+}
+
 export default function Dashboard() {
+  const [announcements, setAnnouncements] = useState<Announcement[]>([
+    {
+      id: "1",
+      text: "Platform 1 delayed by 10 minutes",
+      language: "english",
+      fontSize: "large",
+      color: "#FF6B6B",
+      isActive: true,
+      mode: "manual",
+      createdAt: "2 min ago",
+    },
+    {
+      id: "2",
+      text: "प्लेटफॉर्म 2 समय पर आ रहा है",
+      language: "hindi",
+      fontSize: "medium",
+      color: "#4ECDC4",
+      isActive: false,
+      mode: "manual",
+      createdAt: "5 min ago",
+    },
+  ]);
+
+  const [operationMode, setOperationMode] = useState<"auto" | "manual">("manual");
+  const [newAnnouncement, setNewAnnouncement] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState<"english" | "hindi" | "regional">(
+    "english"
+  );
+  const [selectedFontSize, setSelectedFontSize] = useState<"small" | "medium" | "large">(
+    "medium"
+  );
+  const [selectedColor, setSelectedColor] = useState("#FF6B6B");
+
+  const handleCreateAnnouncement = () => {
+    if (!newAnnouncement.trim()) return;
+
+    const announcement: Announcement = {
+      id: Date.now().toString(),
+      text: newAnnouncement,
+      language: selectedLanguage,
+      fontSize: selectedFontSize,
+      color: selectedColor,
+      isActive: true,
+      mode: operationMode,
+      createdAt: "Just now",
+    };
+
+    setAnnouncements([announcement, ...announcements]);
+    setNewAnnouncement("");
+  };
+
+  const handlePlayAnnouncement = (id: string) => {
+    setAnnouncements(
+      announcements.map((ann) =>
+        ann.id === id ? { ...ann, isActive: !ann.isActive } : ann
+      )
+    );
+    // Audio playback would be handled here
+  };
+
+  const handleDeleteAnnouncement = (id: string) => {
+    setAnnouncements(announcements.filter((ann) => ann.id !== id));
+  };
   // Mock data
   const statusCards: StatusCard[] = [
     {
