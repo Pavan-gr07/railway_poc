@@ -14,9 +14,11 @@ import {
   Mic,
   Plus,
   Trash2,
+  Square,
+  Play,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface StatusCard {
   label: string;
