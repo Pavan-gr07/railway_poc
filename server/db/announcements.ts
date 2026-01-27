@@ -126,6 +126,12 @@ export function createAnnouncementRecord(
   };
 
   announcementDB.records.set(id, record);
+
+  // Broadcast to connected WebSocket clients
+  if (broadcastCallback) {
+    broadcastCallback(record);
+  }
+
   return record;
 }
 
