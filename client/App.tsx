@@ -12,6 +12,7 @@ import Trains from "./pages/Trains";
 import Displays from "./pages/Displays";
 import HSR from "./pages/HSR";
 import Events from "./pages/Events";
+import Announcements from "./pages/Announcements";
 import Config from "./pages/Config";
 import NotFound from "./pages/NotFound";
 
