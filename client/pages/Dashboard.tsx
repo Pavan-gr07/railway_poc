@@ -544,6 +544,72 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Automatic Announcements */}
+      {operationMode === "auto" && (
+        <div className="bg-card border border-border rounded-lg overflow-hidden">
+          <div className="px-6 py-4 border-b border-border flex items-center gap-2">
+            <Radio className="w-5 h-5 text-primary" />
+            <h2 className="text-lg font-semibold text-foreground">
+              Automatic Announcements
+            </h2>
+            {isLoadingAnnouncements && (
+              <Loader className="w-4 h-4 animate-spin ml-auto" />
+            )}
+          </div>
+          <div className="p-6">
+            {autoAnnouncements.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                No automatic announcements triggered yet. Train updates will be announced automatically.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {autoAnnouncements.map((record) => (
+                  <div
+                    key={record.id}
+                    className={cn(
+                      "p-4 rounded-lg border",
+                      record.status === "announced"
+                        ? "bg-success/5 border-success/20"
+                        : record.status === "pending"
+                          ? "bg-warning/5 border-warning/20"
+                          : "bg-destructive/5 border-destructive/20"
+                    )}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1">
+                        <p className="font-medium text-foreground text-sm">
+                          {record.message}
+                        </p>
+                        <div className="flex items-center gap-2 mt-2 flex-wrap">
+                          <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+                            {record.triggerType.replace(/_/g, " ")}
+                          </span>
+                          <span
+                            className={cn(
+                              "text-xs px-2 py-1 rounded",
+                              record.status === "announced"
+                                ? "bg-success/10 text-success"
+                                : record.status === "pending"
+                                  ? "bg-warning/10 text-warning"
+                                  : "bg-destructive/10 text-destructive"
+                            )}
+                          >
+                            {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                          </span>
+                          <span className="text-xs text-muted-foreground ml-auto">
+                            {new Date(record.createdAt).toLocaleTimeString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Audio Announcements Management */}
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         <div className="px-6 py-4 border-b border-border flex items-center gap-2">
