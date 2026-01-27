@@ -406,10 +406,24 @@ export default function Dashboard() {
           <h3 className="text-sm font-semibold text-foreground mb-4">
             Quick Actions
           </h3>
-          <button className="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-border hover:bg-muted transition-colors font-medium text-foreground">
-            <span>Send to Displays</span>
-            <Send className="w-4 h-4" />
-          </button>
+          <div className="space-y-2">
+            <button className="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-border hover:bg-muted transition-colors font-medium text-foreground">
+              <span>Send to Displays</span>
+              <Send className="w-4 h-4" />
+            </button>
+            <button
+              onClick={handleTriggerDemo}
+              disabled={isSpeaking}
+              className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-colors font-medium text-primary disabled:opacity-50"
+            >
+              <span>Test Auto Announcement</span>
+              {isSpeaking ? (
+                <Loader className="w-4 h-4 animate-spin" />
+              ) : (
+                <PlayCircle className="w-4 h-4" />
+              )}
+            </button>
+          </div>
         </div>
 
         <div className="bg-card border border-border rounded-lg p-4">
