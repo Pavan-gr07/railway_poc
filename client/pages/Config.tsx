@@ -6,6 +6,7 @@ import {
   Save,
   RefreshCw,
   Lock,
+  Plus,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
