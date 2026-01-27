@@ -26,6 +26,7 @@ const AppContent = () => (
       <Route path="/displays" element={<Displays />} />
       <Route path="/hsr" element={<HSR />} />
       <Route path="/events" element={<Events />} />
+      <Route path="/announcements" element={<Announcements />} />
       <Route path="/config" element={<Config />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
