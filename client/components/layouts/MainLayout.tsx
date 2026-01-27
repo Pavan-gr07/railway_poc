@@ -24,6 +24,7 @@ const navigationItems = [
   { label: "Display Management", path: "/displays", icon: Monitor },
   { label: "Health Status Report", path: "/hsr", icon: Activity },
   { label: "Event Log", path: "/events", icon: AlertCircle },
+  { label: "Announcements", path: "/announcements", icon: Radio },
   { label: "Configuration", path: "/config", icon: Settings },
 ];
 
