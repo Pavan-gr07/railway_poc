@@ -62,6 +62,7 @@ export default function Dashboard() {
   const audioChunksRef = useRef<Blob[]>([]);
 
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [autoAnnouncements, setAutoAnnouncements] = useState<AnnouncementRecord[]>([]);
   const [operationMode, setOperationMode] = useState<"auto" | "manual">(
     "manual",
   );
@@ -71,7 +72,52 @@ export default function Dashboard() {
     "english" | "hindi" | "regional"
   >("english");
   const [selectedColor, setSelectedColor] = useState("#FF6B6B");
+  const [isLoadingAnnouncements, setIsLoadingAnnouncements] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const recordingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const ttsEngine = getTTSEngine();
+
+  // Load announcements on mount
+  useEffect(() => {
+    loadAnnouncements();
+    const interval = setInterval(loadAnnouncements, 5000); // Refresh every 5 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  const loadAnnouncements = async () => {
+    try {
+      setIsLoadingAnnouncements(true);
+      const data = await getAnnouncements();
+      setAutoAnnouncements(data.records.slice(0, 10)); // Show recent 10
+    } catch (error) {
+      console.error("Failed to load announcements:", error);
+    } finally {
+      setIsLoadingAnnouncements(false);
+    }
+  };
+
+  const handleTriggerDemo = async () => {
+    try {
+      setIsSpeaking(true);
+      const record = await triggerAnnouncement(
+        "tpl_delay_1",
+        "en",
+        { trainNumber: "12345", minutes: "15" },
+        "12345"
+      );
+
+      // Speak the announcement
+      await ttsEngine.speak(record.message, "en", () => {
+        markAnnouncementAnnounced(record.id);
+      });
+
+      await loadAnnouncements();
+    } catch (error) {
+      console.error("Failed to trigger announcement:", error);
+    } finally {
+      setIsSpeaking(false);
+    }
+  };
 
   const startRecording = async () => {
     try {
