@@ -30,5 +30,8 @@ export function createServer(): Express {
   // Announcement routes
   app.use("/api/announcements", announcementRoutes);
 
+  // Train routes
+  app.use("/api/trains", trainRoutes);
+
   return app;
 }
