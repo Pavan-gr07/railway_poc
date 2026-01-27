@@ -14,9 +14,13 @@ import {
   Mic,
   Square,
   Trash2,
+  PlayCircle,
+  Loader,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { getAnnouncements, triggerAnnouncement, getTTSEngine, markAnnouncementAnnounced } from "@/services/announcements";
+import type { AnnouncementRecord } from "@shared/api";
 
 interface StatusCard {
   label: string;
