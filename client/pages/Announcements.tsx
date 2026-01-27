@@ -10,7 +10,11 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
-import { getAnnouncements, getTTSEngine, markAnnouncementAnnounced } from "@/services/announcements";
+import {
+  getAnnouncements,
+  getTTSEngine,
+  markAnnouncementAnnounced,
+} from "@/services/announcements";
 import type { AnnouncementTemplate, AnnouncementRecord } from "@shared/api";
 
 export default function Announcements() {
@@ -54,7 +58,11 @@ export default function Announcements() {
 
   const triggerTypes = [
     { id: "train_delay", label: "Train Delay", color: "warning" },
-    { id: "train_cancellation", label: "Train Cancellation", color: "destructive" },
+    {
+      id: "train_cancellation",
+      label: "Train Cancellation",
+      color: "destructive",
+    },
     { id: "platform_change", label: "Platform Change", color: "primary" },
     { id: "boarding_started", label: "Boarding Started", color: "success" },
     { id: "health_alert", label: "Health Alert", color: "warning" },
@@ -102,7 +110,9 @@ export default function Announcements() {
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <p className="font-semibold text-foreground">{template.name}</p>
+                      <p className="font-semibold text-foreground">
+                        {template.name}
+                      </p>
                       <p className="text-xs text-muted-foreground mt-1">
                         {template.triggerType.replace(/_/g, " ")}
                       </p>
@@ -110,7 +120,7 @@ export default function Announcements() {
                     <div
                       className={cn(
                         "w-3 h-3 rounded-full",
-                        template.enabled ? "bg-success" : "bg-muted"
+                        template.enabled ? "bg-success" : "bg-muted",
                       )}
                     />
                   </div>
@@ -143,7 +153,9 @@ export default function Announcements() {
           <h2 className="text-lg font-semibold text-foreground">
             Recent Announcements
           </h2>
-          {isLoading && <Loader className="w-4 h-4 animate-spin ml-auto text-primary" />}
+          {isLoading && (
+            <Loader className="w-4 h-4 animate-spin ml-auto text-primary" />
+          )}
         </div>
 
         <div className="overflow-x-auto">
@@ -171,7 +183,10 @@ export default function Announcements() {
               {records.map((record) => {
                 const isCurrentlySpeaking = isSpeaking === record.id;
                 return (
-                  <tr key={record.id} className="hover:bg-muted/50 transition-colors">
+                  <tr
+                    key={record.id}
+                    className="hover:bg-muted/50 transition-colors"
+                  >
                     <td className="px-6 py-4 text-sm text-muted-foreground">
                       {new Date(record.createdAt).toLocaleTimeString()}
                     </td>
@@ -199,16 +214,19 @@ export default function Announcements() {
                               ? "text-success"
                               : record.status === "pending"
                                 ? "text-warning"
-                                : "text-destructive"
+                                : "text-destructive",
                           )}
                         >
-                          {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                          {record.status.charAt(0).toUpperCase() +
+                            record.status.slice(1)}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm">
                       <button
-                        onClick={() => handlePlayAnnouncement(record.id, record.message)}
+                        onClick={() =>
+                          handlePlayAnnouncement(record.id, record.message)
+                        }
                         disabled={isCurrentlySpeaking}
                         className="flex items-center gap-1 px-3 py-1 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-primary text-xs font-medium disabled:opacity-50"
                       >
@@ -229,7 +247,8 @@ export default function Announcements() {
 
         {records.length === 0 && !isLoading && (
           <div className="p-6 text-center text-muted-foreground">
-            No announcements yet. Automatic announcements will appear here when triggered.
+            No announcements yet. Automatic announcements will appear here when
+            triggered.
           </div>
         )}
       </div>
@@ -249,17 +268,24 @@ export default function Announcements() {
                       ? "bg-destructive"
                       : type.color === "warning"
                         ? "bg-warning"
-                        : "bg-primary"
+                        : "bg-primary",
                 )}
               />
               <div>
-                <p className="font-medium text-sm text-foreground">{type.label}</p>
+                <p className="font-medium text-sm text-foreground">
+                  {type.label}
+                </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {type.id === "train_delay" && "Announced when train is delayed"}
-                  {type.id === "train_cancellation" && "Announced when train is cancelled"}
-                  {type.id === "platform_change" && "Announced when platform changes"}
-                  {type.id === "boarding_started" && "Announced when boarding starts"}
-                  {type.id === "health_alert" && "Announced for display health issues"}
+                  {type.id === "train_delay" &&
+                    "Announced when train is delayed"}
+                  {type.id === "train_cancellation" &&
+                    "Announced when train is cancelled"}
+                  {type.id === "platform_change" &&
+                    "Announced when platform changes"}
+                  {type.id === "boarding_started" &&
+                    "Announced when boarding starts"}
+                  {type.id === "health_alert" &&
+                    "Announced for display health issues"}
                   {type.id === "custom" && "Custom announcements"}
                 </p>
               </div>

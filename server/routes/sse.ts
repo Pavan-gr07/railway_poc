@@ -8,7 +8,7 @@ const sseClients = new Set<any>();
 
 export function broadcastAnnouncement(record: AnnouncementRecord) {
   const message = `data: ${JSON.stringify({ type: "new_announcement", data: record })}\n\n`;
-  
+
   sseClients.forEach((client) => {
     try {
       client.write(message);

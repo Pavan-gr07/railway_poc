@@ -94,7 +94,10 @@ export function getTrain(id: string): Train | undefined {
   return trainDB.trains.get(id);
 }
 
-export function updateTrain(id: string, updates: Partial<Train>): Train | undefined {
+export function updateTrain(
+  id: string,
+  updates: Partial<Train>,
+): Train | undefined {
   const train = trainDB.trains.get(id);
   if (!train) return undefined;
 
@@ -115,7 +118,7 @@ function triggerAnnouncementForTrainUpdate(oldTrain: Train, newTrain: Train) {
       "train_delay",
       `Train number ${newTrain.trainNumber} is delayed by approximately ${newTrain.delayMinutes} minutes`,
       "en",
-      newTrain.trainNumber
+      newTrain.trainNumber,
     );
   }
 
@@ -126,7 +129,7 @@ function triggerAnnouncementForTrainUpdate(oldTrain: Train, newTrain: Train) {
       "train_cancellation",
       `Train number ${newTrain.trainNumber} to ${newTrain.destination} has been cancelled`,
       "en",
-      newTrain.trainNumber
+      newTrain.trainNumber,
     );
   }
 
@@ -137,7 +140,7 @@ function triggerAnnouncementForTrainUpdate(oldTrain: Train, newTrain: Train) {
       "boarding_started",
       `Boarding has started for train number ${newTrain.trainNumber} on platform ${newTrain.platform}`,
       "en",
-      newTrain.trainNumber
+      newTrain.trainNumber,
     );
   }
 
@@ -148,7 +151,7 @@ function triggerAnnouncementForTrainUpdate(oldTrain: Train, newTrain: Train) {
       "platform_change",
       `Train number ${newTrain.trainNumber} will now depart from platform ${newTrain.platform}. Please move to the correct platform`,
       "en",
-      newTrain.trainNumber
+      newTrain.trainNumber,
     );
   }
 }

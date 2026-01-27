@@ -6,13 +6,18 @@ import {
   updateAnnouncementRecord,
   getRecentAnnouncements,
 } from "../db/announcements";
-import { CreateAnnouncementTemplateRequest, AnnouncementListResponse } from "@shared/api";
+import {
+  CreateAnnouncementTemplateRequest,
+  AnnouncementListResponse,
+} from "@shared/api";
 
 const router = Router();
 
 // Get all announcement templates and recent records
 export const handleGetAnnouncements: RequestHandler = (req, res) => {
-  const templates = Array.from(announcementDB.templates.values()).filter((t) => t.enabled);
+  const templates = Array.from(announcementDB.templates.values()).filter(
+    (t) => t.enabled,
+  );
   const records = getRecentAnnouncements(50);
 
   const response: AnnouncementListResponse = {
@@ -36,7 +41,7 @@ export const handleCreateAnnouncementTemplate: RequestHandler = (req, res) => {
     body.triggerType,
     body.textEnglish,
     body.textHindi,
-    body.textRegional
+    body.textRegional,
   );
 
   res.status(201).json(template);
@@ -80,7 +85,7 @@ export const handleTriggerAnnouncement: RequestHandler = (req, res) => {
     template.triggerType,
     finalText,
     language as "en" | "hi" | "regional",
-    trainNumber
+    trainNumber,
   );
 
   res.status(201).json(record);

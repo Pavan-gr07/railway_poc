@@ -12,7 +12,7 @@ class AnnouncementWebSocketServer {
 
   initialize(httpServer: HTTPServer) {
     this.server = httpServer;
-    
+
     // Try to use ws package if available, otherwise fallback
     try {
       const WebSocket = require("ws");
@@ -44,7 +44,7 @@ class AnnouncementWebSocketServer {
     } catch (error) {
       console.log(
         "ws package not available, WebSocket functionality disabled",
-        error
+        error,
       );
     }
   }
@@ -57,13 +57,16 @@ class AnnouncementWebSocketServer {
       case "get_announcements":
         const templates = Array.from(announcementDB.templates.values());
         const records = Array.from(announcementDB.records.values())
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          )
           .slice(0, 50);
         ws.send(
           JSON.stringify({
             type: "announcements_update",
             data: { templates, records },
-          })
+          }),
         );
         break;
     }

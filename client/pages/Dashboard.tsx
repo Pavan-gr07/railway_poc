@@ -19,7 +19,12 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
-import { getAnnouncements, triggerAnnouncement, getTTSEngine, markAnnouncementAnnounced } from "@/services/announcements";
+import {
+  getAnnouncements,
+  triggerAnnouncement,
+  getTTSEngine,
+  markAnnouncementAnnounced,
+} from "@/services/announcements";
 import type { AnnouncementRecord } from "@shared/api";
 
 interface StatusCard {
@@ -62,7 +67,9 @@ export default function Dashboard() {
   const audioChunksRef = useRef<Blob[]>([]);
 
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [autoAnnouncements, setAutoAnnouncements] = useState<AnnouncementRecord[]>([]);
+  const [autoAnnouncements, setAutoAnnouncements] = useState<
+    AnnouncementRecord[]
+  >([]);
   const [operationMode, setOperationMode] = useState<"auto" | "manual">(
     "manual",
   );
@@ -103,7 +110,7 @@ export default function Dashboard() {
         "tpl_delay_1",
         "en",
         { trainNumber: "12345", minutes: "15" },
-        "12345"
+        "12345",
       );
 
       // Speak the announcement
@@ -559,7 +566,8 @@ export default function Dashboard() {
           <div className="p-6">
             {autoAnnouncements.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-4">
-                No automatic announcements triggered yet. Train updates will be announced automatically.
+                No automatic announcements triggered yet. Train updates will be
+                announced automatically.
               </p>
             ) : (
               <div className="space-y-3">
@@ -572,7 +580,7 @@ export default function Dashboard() {
                         ? "bg-success/5 border-success/20"
                         : record.status === "pending"
                           ? "bg-warning/5 border-warning/20"
-                          : "bg-destructive/5 border-destructive/20"
+                          : "bg-destructive/5 border-destructive/20",
                     )}
                   >
                     <div className="flex items-start justify-between gap-3">
@@ -591,10 +599,11 @@ export default function Dashboard() {
                                 ? "bg-success/10 text-success"
                                 : record.status === "pending"
                                   ? "bg-warning/10 text-warning"
-                                  : "bg-destructive/10 text-destructive"
+                                  : "bg-destructive/10 text-destructive",
                             )}
                           >
-                            {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                            {record.status.charAt(0).toUpperCase() +
+                              record.status.slice(1)}
                           </span>
                           <span className="text-xs text-muted-foreground ml-auto">
                             {new Date(record.createdAt).toLocaleTimeString()}

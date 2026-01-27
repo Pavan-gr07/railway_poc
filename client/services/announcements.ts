@@ -15,7 +15,7 @@ export async function triggerAnnouncement(
   templateId: string,
   language: "en" | "hi" | "regional" = "en",
   variables: Record<string, string> = {},
-  trainNumber?: string
+  trainNumber?: string,
 ): Promise<AnnouncementRecord> {
   const response = await fetch(`${API_BASE}/trigger`, {
     method: "POST",
@@ -34,7 +34,7 @@ export async function triggerAnnouncement(
 
 export async function markAnnouncementAnnounced(
   id: string,
-  audioUrl?: string
+  audioUrl?: string,
 ): Promise<AnnouncementRecord> {
   const response = await fetch(`${API_BASE}/${id}/announced`, {
     method: "POST",
@@ -46,7 +46,9 @@ export async function markAnnouncementAnnounced(
   return response.json();
 }
 
-export async function markAnnouncementFailed(id: string): Promise<AnnouncementRecord> {
+export async function markAnnouncementFailed(
+  id: string,
+): Promise<AnnouncementRecord> {
   const response = await fetch(`${API_BASE}/${id}/failed`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -67,15 +69,17 @@ export class TextToSpeechEngine {
   constructor() {
     // Check for Web Speech API support
     const SpeechSynthesisUtterance =
-      window.SpeechSynthesisUtterance || (window as any).webkitSpeechSynthesisUtterance;
-    this.synth = window.speechSynthesis || (window as any).webkitSpeechSynthesis;
+      window.SpeechSynthesisUtterance ||
+      (window as any).webkitSpeechSynthesisUtterance;
+    this.synth =
+      window.speechSynthesis || (window as any).webkitSpeechSynthesis;
     this.isSupported = !!this.synth && !!SpeechSynthesisUtterance;
   }
 
   speak(
     text: string,
     language: "en" | "hi" | "regional" = "en",
-    onComplete?: () => void
+    onComplete?: () => void,
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.isSupported) {
@@ -87,7 +91,8 @@ export class TextToSpeechEngine {
       this.synth.cancel();
 
       const SpeechSynthesisUtterance =
-        window.SpeechSynthesisUtterance || (window as any).webkitSpeechSynthesisUtterance;
+        window.SpeechSynthesisUtterance ||
+        (window as any).webkitSpeechSynthesisUtterance;
       const utterance = new SpeechSynthesisUtterance(text);
 
       // Set language based on selection
