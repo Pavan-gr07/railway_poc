@@ -1,5 +1,12 @@
 import { AnnouncementTemplate, AnnouncementRecord } from "@shared/api";
 
+// Broadcast callback
+let broadcastCallback: ((record: AnnouncementRecord) => void) | null = null;
+
+export function setBroadcastCallback(cb: (record: AnnouncementRecord) => void) {
+  broadcastCallback = cb;
+}
+
 // In-memory database for announcements
 export const announcementDB = {
   templates: new Map<string, AnnouncementTemplate>(),
