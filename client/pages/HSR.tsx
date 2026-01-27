@@ -123,7 +123,9 @@ export default function HSR() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-card border border-border rounded-lg p-4">
           <p className="text-sm text-muted-foreground">Total Displays</p>
-          <p className="text-3xl font-bold text-foreground mt-2">{displays.length}</p>
+          <p className="text-3xl font-bold text-foreground mt-2">
+            {displays.length}
+          </p>
         </div>
         <div className="bg-card border border-border rounded-lg p-4">
           <p className="text-sm text-muted-foreground">Healthy</p>
@@ -134,7 +136,11 @@ export default function HSR() {
         <div className="bg-card border border-border rounded-lg p-4">
           <p className="text-sm text-muted-foreground">Warning</p>
           <p className="text-3xl font-bold text-warning mt-2">
-            {displays.filter((d) => d.overallHealth >= 70 && d.overallHealth < 90).length}
+            {
+              displays.filter(
+                (d) => d.overallHealth >= 70 && d.overallHealth < 90,
+              ).length
+            }
           </p>
         </div>
         <div className="bg-card border border-border rounded-lg p-4">
@@ -155,7 +161,7 @@ export default function HSR() {
                 ? "border-success/20 bg-success/5"
                 : display.overallHealth >= 70
                   ? "border-warning/20 bg-warning/5"
-                  : "border-destructive/20 bg-destructive/5"
+                  : "border-destructive/20 bg-destructive/5",
             )}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -163,13 +169,17 @@ export default function HSR() {
               <div>
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-foreground">{display.id}</h3>
-                    <p className="text-sm text-muted-foreground">{display.location}</p>
+                    <h3 className="text-lg font-semibold text-foreground">
+                      {display.id}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {display.location}
+                    </p>
                   </div>
                   <span
                     className={cn(
                       "text-3xl font-bold",
-                      getHealthColor(display.overallHealth)
+                      getHealthColor(display.overallHealth),
                     )}
                   >
                     {display.overallHealth}%
@@ -178,10 +188,15 @@ export default function HSR() {
 
                 {/* Health Bar */}
                 <div className="space-y-2 mb-4">
-                  <p className="text-xs font-medium text-muted-foreground">Overall Health</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Overall Health
+                  </p>
                   <div className="w-full bg-muted rounded-full h-3">
                     <div
-                      className={cn("h-full rounded-full", getHealthBg(display.overallHealth))}
+                      className={cn(
+                        "h-full rounded-full",
+                        getHealthBg(display.overallHealth),
+                      )}
                       style={{ width: `${display.overallHealth}%` }}
                     />
                   </div>
@@ -192,7 +207,7 @@ export default function HSR() {
                   <span
                     className={cn(
                       "inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium",
-                      getPowerStatusColor(display.powerStatus)
+                      getPowerStatusColor(display.powerStatus),
                     )}
                   >
                     {display.powerStatus === "good" ? (
@@ -200,23 +215,39 @@ export default function HSR() {
                     ) : (
                       <AlertCircle className="w-3 h-3" />
                     )}
-                    Power: {display.powerStatus.charAt(0).toUpperCase() + display.powerStatus.slice(1)}
+                    Power:{" "}
+                    {display.powerStatus.charAt(0).toUpperCase() +
+                      display.powerStatus.slice(1)}
                   </span>
-                  <p className="text-xs text-muted-foreground">Last sync: {display.lastSync}</p>
+                  <p className="text-xs text-muted-foreground">
+                    Last sync: {display.lastSync}
+                  </p>
                 </div>
               </div>
 
               {/* LED Components */}
               <div className="grid grid-cols-3 gap-3">
                 <div className="bg-background border border-border rounded-lg p-4 text-center">
-                  <p className="text-xs font-medium text-muted-foreground mb-2">LED Panel 1</p>
+                  <p className="text-xs font-medium text-muted-foreground mb-2">
+                    LED Panel 1
+                  </p>
                   <div className="flex justify-center mb-2">
-                    <div className={cn("w-12 h-12 rounded-full flex items-center justify-center", 
-                      getHealthBg(display.led1) === "bg-success" ? "bg-success/20" : 
-                      getHealthBg(display.led1) === "bg-warning" ? "bg-warning/20" : 
-                      "bg-destructive/20"
-                    )}>
-                      <span className={cn("text-lg font-bold", getHealthColor(display.led1))}>
+                    <div
+                      className={cn(
+                        "w-12 h-12 rounded-full flex items-center justify-center",
+                        getHealthBg(display.led1) === "bg-success"
+                          ? "bg-success/20"
+                          : getHealthBg(display.led1) === "bg-warning"
+                            ? "bg-warning/20"
+                            : "bg-destructive/20",
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "text-lg font-bold",
+                          getHealthColor(display.led1),
+                        )}
+                      >
                         {display.led1}
                       </span>
                     </div>
@@ -225,14 +256,26 @@ export default function HSR() {
                 </div>
 
                 <div className="bg-background border border-border rounded-lg p-4 text-center">
-                  <p className="text-xs font-medium text-muted-foreground mb-2">LED Panel 2</p>
+                  <p className="text-xs font-medium text-muted-foreground mb-2">
+                    LED Panel 2
+                  </p>
                   <div className="flex justify-center mb-2">
-                    <div className={cn("w-12 h-12 rounded-full flex items-center justify-center",
-                      getHealthBg(display.led2) === "bg-success" ? "bg-success/20" : 
-                      getHealthBg(display.led2) === "bg-warning" ? "bg-warning/20" : 
-                      "bg-destructive/20"
-                    )}>
-                      <span className={cn("text-lg font-bold", getHealthColor(display.led2))}>
+                    <div
+                      className={cn(
+                        "w-12 h-12 rounded-full flex items-center justify-center",
+                        getHealthBg(display.led2) === "bg-success"
+                          ? "bg-success/20"
+                          : getHealthBg(display.led2) === "bg-warning"
+                            ? "bg-warning/20"
+                            : "bg-destructive/20",
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "text-lg font-bold",
+                          getHealthColor(display.led2),
+                        )}
+                      >
                         {display.led2}
                       </span>
                     </div>
@@ -241,14 +284,26 @@ export default function HSR() {
                 </div>
 
                 <div className="bg-background border border-border rounded-lg p-4 text-center">
-                  <p className="text-xs font-medium text-muted-foreground mb-2">LED Panel 3</p>
+                  <p className="text-xs font-medium text-muted-foreground mb-2">
+                    LED Panel 3
+                  </p>
                   <div className="flex justify-center mb-2">
-                    <div className={cn("w-12 h-12 rounded-full flex items-center justify-center",
-                      getHealthBg(display.led3) === "bg-success" ? "bg-success/20" : 
-                      getHealthBg(display.led3) === "bg-warning" ? "bg-warning/20" : 
-                      "bg-destructive/20"
-                    )}>
-                      <span className={cn("text-lg font-bold", getHealthColor(display.led3))}>
+                    <div
+                      className={cn(
+                        "w-12 h-12 rounded-full flex items-center justify-center",
+                        getHealthBg(display.led3) === "bg-success"
+                          ? "bg-success/20"
+                          : getHealthBg(display.led3) === "bg-warning"
+                            ? "bg-warning/20"
+                            : "bg-destructive/20",
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "text-lg font-bold",
+                          getHealthColor(display.led3),
+                        )}
+                      >
                         {display.led3}
                       </span>
                     </div>
@@ -260,12 +315,19 @@ export default function HSR() {
               {/* Temperature */}
               <div className="col-span-1 md:col-span-2">
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-sm font-medium text-muted-foreground">Temperature</p>
-                  <span className={cn("font-semibold", 
-                    display.temperature <= 50 ? "text-success" :
-                    display.temperature <= 60 ? "text-warning" :
-                    "text-destructive"
-                  )}>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Temperature
+                  </p>
+                  <span
+                    className={cn(
+                      "font-semibold",
+                      display.temperature <= 50
+                        ? "text-success"
+                        : display.temperature <= 60
+                          ? "text-warning"
+                          : "text-destructive",
+                    )}
+                  >
                     {display.temperature}°C
                   </span>
                 </div>
@@ -273,11 +335,15 @@ export default function HSR() {
                   <div
                     className={cn(
                       "h-full rounded-full",
-                      display.temperature <= 50 ? "bg-success" :
-                      display.temperature <= 60 ? "bg-warning" :
-                      "bg-destructive"
+                      display.temperature <= 50
+                        ? "bg-success"
+                        : display.temperature <= 60
+                          ? "bg-warning"
+                          : "bg-destructive",
                     )}
-                    style={{ width: `${Math.min((display.temperature / 80) * 100, 100)}%` }}
+                    style={{
+                      width: `${Math.min((display.temperature / 80) * 100, 100)}%`,
+                    }}
                   />
                 </div>
               </div>

@@ -28,13 +28,22 @@ export default function Config() {
     {
       id: "1",
       name: "Administrator",
-      permissions: ["Full Access", "User Management", "System Settings", "Report Generation"],
+      permissions: [
+        "Full Access",
+        "User Management",
+        "System Settings",
+        "Report Generation",
+      ],
       userCount: 3,
     },
     {
       id: "2",
       name: "Operator",
-      permissions: ["Manual Announcements", "Train Updates", "Display Management"],
+      permissions: [
+        "Manual Announcements",
+        "Train Updates",
+        "Display Management",
+      ],
       userCount: 12,
     },
     {
@@ -80,7 +89,9 @@ export default function Config() {
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         <div className="px-6 py-4 border-b border-border flex items-center gap-2">
           <Server className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold text-foreground">System Settings</h2>
+          <h2 className="text-lg font-semibold text-foreground">
+            System Settings
+          </h2>
         </div>
         <div className="p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -157,7 +168,9 @@ export default function Config() {
           <div className="space-y-4 pt-4 border-t border-border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-foreground">NTES Server Integration</p>
+                <p className="text-sm font-medium text-foreground">
+                  NTES Server Integration
+                </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   Enable automatic train data fetching from NTES
                 </p>
@@ -180,7 +193,9 @@ export default function Config() {
 
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-foreground">Audio Announcements</p>
+                <p className="text-sm font-medium text-foreground">
+                  Audio Announcements
+                </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   Enable speaker announcements on display boards
                 </p>
@@ -219,7 +234,9 @@ export default function Config() {
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         <div className="px-6 py-4 border-b border-border flex items-center gap-2">
           <Users className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold text-foreground">User Categories</h2>
+          <h2 className="text-lg font-semibold text-foreground">
+            User Categories
+          </h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -241,11 +258,16 @@ export default function Config() {
             </thead>
             <tbody className="divide-y divide-border">
               {userCategories.map((category) => (
-                <tr key={category.id} className="hover:bg-muted/50 transition-colors">
+                <tr
+                  key={category.id}
+                  className="hover:bg-muted/50 transition-colors"
+                >
                   <td className="px-6 py-4 text-sm font-semibold text-foreground">
                     {category.name}
                   </td>
-                  <td className="px-6 py-4 text-sm text-foreground">{category.userCount}</td>
+                  <td className="px-6 py-4 text-sm text-foreground">
+                    {category.userCount}
+                  </td>
                   <td className="px-6 py-4 text-sm text-foreground">
                     <div className="flex flex-wrap gap-2">
                       {category.permissions.map((perm, idx) => (
@@ -283,13 +305,17 @@ export default function Config() {
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         <div className="px-6 py-4 border-b border-border flex items-center gap-2">
           <Palette className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold text-foreground">Display Colors Configuration</h2>
+          <h2 className="text-lg font-semibold text-foreground">
+            Display Colors Configuration
+          </h2>
         </div>
         <div className="p-6 space-y-4">
           {colorConfigs.map((config, idx) => (
             <div key={idx} className="flex items-center gap-4">
               <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">{config.status}</p>
+                <p className="text-sm font-medium text-foreground">
+                  {config.status}
+                </p>
               </div>
               <input
                 type="color"
@@ -314,11 +340,15 @@ export default function Config() {
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         <div className="px-6 py-4 border-b border-border flex items-center gap-2">
           <Lock className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold text-foreground">Security & Access</h2>
+          <h2 className="text-lg font-semibold text-foreground">
+            Security & Access
+          </h2>
         </div>
         <div className="p-6 space-y-4">
           <div className="bg-muted/30 border border-border rounded-lg p-4">
-            <p className="text-sm font-medium text-foreground mb-2">Session Timeout</p>
+            <p className="text-sm font-medium text-foreground mb-2">
+              Session Timeout
+            </p>
             <p className="text-xs text-muted-foreground mb-3">
               Automatically logout inactive users
             </p>
@@ -332,7 +362,9 @@ export default function Config() {
           </div>
 
           <div className="bg-muted/30 border border-border rounded-lg p-4">
-            <p className="text-sm font-medium text-foreground mb-2">API Access Control</p>
+            <p className="text-sm font-medium text-foreground mb-2">
+              API Access Control
+            </p>
             <p className="text-xs text-muted-foreground mb-3">
               Manage which systems can access the REST API
             </p>

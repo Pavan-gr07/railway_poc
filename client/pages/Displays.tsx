@@ -1,4 +1,10 @@
-import { Monitor, Plus, Settings, AlertCircle, CheckCircle } from "lucide-react";
+import {
+  Monitor,
+  Plus,
+  Settings,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
@@ -102,9 +108,12 @@ export default function Displays() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Display Management</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            Display Management
+          </h1>
           <p className="text-muted-foreground mt-1">
-            Configure and manage AVDB and VDB display boards across all platforms
+            Configure and manage AVDB and VDB display boards across all
+            platforms
           </p>
         </div>
         <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-medium">
@@ -116,7 +125,9 @@ export default function Displays() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-card border border-border rounded-lg p-4">
           <p className="text-sm text-muted-foreground">Total Displays</p>
-          <p className="text-3xl font-bold text-foreground mt-2">{displays.length}</p>
+          <p className="text-3xl font-bold text-foreground mt-2">
+            {displays.length}
+          </p>
         </div>
         <div className="bg-card border border-border rounded-lg p-4">
           <p className="text-sm text-muted-foreground">Online</p>
@@ -141,7 +152,9 @@ export default function Displays() {
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         <div className="px-6 py-4 border-b border-border flex items-center gap-2">
           <Monitor className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold text-foreground">Display Boards</h2>
+          <h2 className="text-lg font-semibold text-foreground">
+            Display Boards
+          </h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -175,18 +188,27 @@ export default function Displays() {
             </thead>
             <tbody className="divide-y divide-border">
               {displays.map((display) => (
-                <tr key={display.id} className="hover:bg-muted/50 transition-colors">
+                <tr
+                  key={display.id}
+                  className="hover:bg-muted/50 transition-colors"
+                >
                   <td className="px-6 py-4 text-sm font-semibold text-foreground">
                     {display.id}
                   </td>
-                  <td className="px-6 py-4 text-sm text-foreground">{display.location}</td>
+                  <td className="px-6 py-4 text-sm text-foreground">
+                    {display.location}
+                  </td>
                   <td className="px-6 py-4 text-sm text-foreground">
                     <span className="bg-muted text-muted-foreground px-2 py-1 rounded text-xs font-medium">
                       {display.type}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-foreground">{display.resolution}</td>
-                  <td className="px-6 py-4 text-sm text-foreground">{display.brightness}%</td>
+                  <td className="px-6 py-4 text-sm text-foreground">
+                    {display.resolution}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-foreground">
+                    {display.brightness}%
+                  </td>
                   <td className="px-6 py-4 text-sm text-foreground font-mono text-xs">
                     {display.ip}
                   </td>
@@ -194,11 +216,12 @@ export default function Displays() {
                     <span
                       className={cn(
                         "inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium",
-                        getStatusBadge(display.status)
+                        getStatusBadge(display.status),
                       )}
                     >
                       {getStatusIcon(display.status)}
-                      {display.status.charAt(0).toUpperCase() + display.status.slice(1)}
+                      {display.status.charAt(0).toUpperCase() +
+                        display.status.slice(1)}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm">

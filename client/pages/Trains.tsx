@@ -102,7 +102,9 @@ export default function Trains() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Train Management</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            Train Management
+          </h1>
           <p className="text-muted-foreground mt-1">
             View and manage train schedules, platforms, and real-time updates
           </p>
@@ -116,7 +118,9 @@ export default function Trains() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div className="bg-card border border-border rounded-lg p-4">
           <p className="text-sm text-muted-foreground">Total Trains</p>
-          <p className="text-3xl font-bold text-foreground mt-2">{trains.length}</p>
+          <p className="text-3xl font-bold text-foreground mt-2">
+            {trains.length}
+          </p>
         </div>
         <div className="bg-card border border-border rounded-lg p-4">
           <p className="text-sm text-muted-foreground">On Time</p>
@@ -175,24 +179,40 @@ export default function Trains() {
             </thead>
             <tbody className="divide-y divide-border">
               {trains.map((train) => (
-                <tr key={train.id} className="hover:bg-muted/50 transition-colors">
+                <tr
+                  key={train.id}
+                  className="hover:bg-muted/50 transition-colors"
+                >
                   <td className="px-6 py-4 text-sm font-semibold text-foreground">
                     {train.number}
                   </td>
-                  <td className="px-6 py-4 text-sm text-foreground">{train.name}</td>
+                  <td className="px-6 py-4 text-sm text-foreground">
+                    {train.name}
+                  </td>
                   <td className="px-6 py-4 text-sm text-foreground">
                     <div className="flex flex-col">
                       <span>{train.source}</span>
-                      <span className="text-xs text-muted-foreground">→ {train.destination}</span>
+                      <span className="text-xs text-muted-foreground">
+                        → {train.destination}
+                      </span>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm font-medium text-foreground">
                     {train.platform}
                   </td>
-                  <td className="px-6 py-4 text-sm text-foreground">{train.eta}</td>
-                  <td className="px-6 py-4 text-sm text-foreground">{train.etd}</td>
+                  <td className="px-6 py-4 text-sm text-foreground">
+                    {train.eta}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-foreground">
+                    {train.etd}
+                  </td>
                   <td className="px-6 py-4 text-sm">
-                    <span className={cn("px-3 py-1 rounded-full text-xs font-medium", getStatusColor(train.status))}>
+                    <span
+                      className={cn(
+                        "px-3 py-1 rounded-full text-xs font-medium",
+                        getStatusColor(train.status),
+                      )}
+                    >
                       {getStatusLabel(train.status)}
                     </span>
                   </td>

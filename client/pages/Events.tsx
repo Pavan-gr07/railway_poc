@@ -1,4 +1,10 @@
-import { AlertCircle, CheckCircle, Clock, Filter, Download } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Filter,
+  Download,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
@@ -137,13 +143,11 @@ export default function Events() {
     }
   };
 
-  const categories = [
-    "all",
-    ...new Set(events.map((e) => e.category)),
-  ];
+  const categories = ["all", ...new Set(events.map((e) => e.category))];
 
   const filteredEvents = events.filter((event) => {
-    const matchesCategory = selectedCategory === "all" || event.category === selectedCategory;
+    const matchesCategory =
+      selectedCategory === "all" || event.category === selectedCategory;
     return matchesCategory;
   });
 
@@ -153,7 +157,8 @@ export default function Events() {
         <div>
           <h1 className="text-3xl font-bold text-foreground">Event Log</h1>
           <p className="text-muted-foreground mt-1">
-            View system events, data transfer logs, and audit trail (90-day retention)
+            View system events, data transfer logs, and audit trail (90-day
+            retention)
           </p>
         </div>
         <button className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border hover:bg-muted transition-colors font-medium text-foreground">
@@ -165,7 +170,9 @@ export default function Events() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-card border border-border rounded-lg p-4">
           <p className="text-sm text-muted-foreground">Total Events</p>
-          <p className="text-3xl font-bold text-foreground mt-2">{events.length}</p>
+          <p className="text-3xl font-bold text-foreground mt-2">
+            {events.length}
+          </p>
         </div>
         <div className="bg-card border border-border rounded-lg p-4">
           <p className="text-sm text-muted-foreground">Successful</p>
@@ -213,7 +220,7 @@ export default function Events() {
             key={event.id}
             className={cn(
               "bg-card border rounded-lg p-4 space-y-3 transition-colors hover:bg-muted/30",
-              getEventColor(event.type)
+              getEventColor(event.type),
             )}
           >
             <div className="flex items-start justify-between">
@@ -221,16 +228,22 @@ export default function Events() {
                 {getEventIcon(event.type)}
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-foreground">{event.message}</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {event.message}
+                    </p>
                     <span className="text-xs px-2 py-1 rounded-full bg-background text-muted-foreground">
                       {event.category}
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">{event.details}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {event.details}
+                  </p>
                 </div>
               </div>
               <div className="text-right flex-shrink-0">
-                <p className="text-xs font-mono text-muted-foreground">{event.timestamp}</p>
+                <p className="text-xs font-mono text-muted-foreground">
+                  {event.timestamp}
+                </p>
               </div>
             </div>
             {event.device && (
