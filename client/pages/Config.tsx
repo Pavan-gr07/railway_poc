@@ -345,6 +345,3 @@ export default function Config() {
     </div>
   );
 }
-
-// Add missing Plus import at the top
-import { Plus } from "lucide-react";
