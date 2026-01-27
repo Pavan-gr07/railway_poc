@@ -2,9 +2,14 @@ import "dotenv/config";
 import express, { Express } from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
+import announcementRoutes from "./routes/announcements";
+import { initializeAnnouncementTemplates } from "./db/announcements";
 
 export function createServer(): Express {
   const app = express();
+
+  // Initialize data
+  initializeAnnouncementTemplates();
 
   // Middleware
   app.use(cors());
@@ -18,6 +23,9 @@ export function createServer(): Express {
   });
 
   app.get("/api/demo", handleDemo);
+
+  // Announcement routes
+  app.use("/api/announcements", announcementRoutes);
 
   return app;
 }
