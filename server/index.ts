@@ -3,13 +3,16 @@ import express, { Express } from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import announcementRoutes from "./routes/announcements";
+import trainRoutes from "./routes/trains";
 import { initializeAnnouncementTemplates } from "./db/announcements";
+import { initializeTrains } from "./db/trains";
 
 export function createServer(): Express {
   const app = express();
 
   // Initialize data
   initializeAnnouncementTemplates();
+  initializeTrains();
 
   // Middleware
   app.use(cors());
