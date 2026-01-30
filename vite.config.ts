@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, searchForWorkspaceRoot } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
@@ -8,7 +8,7 @@ export default defineConfig({
     host: "::",
     port: 8080,
     fs: {
-      allow: ["./client", "./shared"],
+      allow: ["./client", "./shared", searchForWorkspaceRoot(process.cwd())],
     },
   },
   build: {
