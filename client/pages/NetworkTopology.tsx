@@ -1,4 +1,4 @@
-import { useState, useEffect, CSSProperties } from "react";
+import { useState, useRef, CSSProperties } from "react";
 
 // Type Definitions
 interface Device {
@@ -16,33 +16,30 @@ interface Station {
     devices: Device[];
 }
 
-interface Particle {
-    id: number;
-    x: number;
-    y: number;
-    size: number;
-    speed: number;
-}
-
 type DeviceStatus = "online" | "warning" | "down" | "critical";
 
+interface ViewportState {
+    x: number;
+    y: number;
+    scale: number;
+}
+
 export default function NetworkTopology() {
+
     const [selectedStation, setSelectedStation] = useState<Station | null>(null);
     const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
     const [transitioning, setTransitioning] = useState<boolean>(false);
-    const [particles, setParticles] = useState<Particle[]>([]);
 
-    // Generate particles for background effect
-    useEffect(() => {
-        const newParticles: Particle[] = Array.from({ length: 50 }, (_, i) => ({
-            id: i,
-            x: Math.random() * 100,
-            y: Math.random() * 100,
-            size: Math.random() * 3 + 1,
-            speed: Math.random() * 20 + 10,
-        }));
-        setParticles(newParticles);
-    }, []);
+    // Viewport state for pan and zoom
+    const [viewport, setViewport] = useState<ViewportState>({
+        x: -332, y: 103, scale: 0.6
+    });
+    console.log(viewport, "viewport")
+    const [isPanning, setIsPanning] = useState(false);
+    const [startPan, setStartPan] = useState({ x: 0, y: 0 });
+
+    const canvasRef = useRef<HTMLDivElement>(null);
+    const svgRef = useRef<SVGSVGElement>(null);
 
     const generateDevices = (): Device[] => [
         { name: "MLDB-01", type: "MLDB", status: "online", health: 98 },
@@ -56,23 +53,80 @@ export default function NetworkTopology() {
         { name: "AGDB-02", type: "AGDB", status: "online", health: 94 },
         { name: "CGDB-02", type: "CGDB", status: "online", health: 96 },
     ];
+
     const generateStations = (count: number): Station[] => {
         return Array.from({ length: count }, (_, index) => {
-            const stationChar = String.fromCharCode(65 + index); // A, B, C...
+            const stationName = `Station ${index + 1}`;
+            const statusRandom = Math.random();
+            const status = statusRandom > 0.9 ? "critical" : statusRandom > 0.8 ? "warning" : "online";
 
             return {
-                id: `st${stationChar}`,
-                name: `Station ${stationChar}`,
-                status: index === 2 ? "critical" : index === 1 ? "warning" : "online",
+                id: `st${index}`,
+                name: stationName,
+                status: status as "online" | "warning" | "critical",
                 location: `Terminal ${index + 1}`,
                 devices: generateDevices(),
             };
         });
     };
 
+    // Change this number to test with different station counts
+    const stations = generateStations(200);
 
-    const stations = generateStations(20); // A → L
+    // Tree layout algorithm - improved to prevent overlapping
+    const buildTreeLayout = (stations: Station[]): {
+        nodes: { station: Station; x: number; y: number }[],
+        root: { x: number; y: number },
+        svgWidth: number,
+        svgHeight: number
+    } => {
+        const horizontalSpacing = 250;
+        const verticalSpacing = 300;
+        const nodesPerLevel = 8; // Nodes per row in the tree
 
+        const nodes: { station: Station; x: number; y: number }[] = [];
+
+        // Calculate tree structure
+        let currentLevel = 0;
+        let nodeIndex = 0;
+
+        const rootX = 2000; // Center horizontally in a large SVG
+        const rootY = 100;   // Start from top
+
+        while (nodeIndex < stations.length) {
+            const nodesInThisLevel = Math.min(nodesPerLevel, stations.length - nodeIndex);
+            const levelWidth = (nodesInThisLevel - 1) * horizontalSpacing;
+            const startX = rootX - (levelWidth / 2);
+
+            for (let i = 0; i < nodesInThisLevel; i++) {
+                if (nodeIndex >= stations.length) break;
+
+                nodes.push({
+                    station: stations[nodeIndex],
+                    x: startX + (i * horizontalSpacing),
+                    y: rootY + ((currentLevel + 1) * verticalSpacing),
+                });
+
+                nodeIndex++;
+            }
+
+            currentLevel++;
+        }
+
+        // Calculate SVG dimensions based on actual node positions
+        const maxY = Math.max(...nodes.map(n => n.y)) + 200;
+        const svgWidth = 4000;
+        const svgHeight = maxY;
+
+        return {
+            nodes,
+            root: { x: rootX, y: rootY },
+            svgWidth,
+            svgHeight
+        };
+    };
+
+    const treeLayout = buildTreeLayout(stations);
 
     const getStatusColor = (status: DeviceStatus): string => {
         switch (status) {
@@ -134,26 +188,65 @@ export default function NetworkTopology() {
                 return "📡";
         }
     };
+    // 1. Add a clamp helper to keep the canvas in view
+    const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
+
+    // 2. Refined Wheel Handler (Smooth Zoom)
+    const handleWheel = (e: React.WheelEvent) => {
+        e.preventDefault();
+        const zoomSpeed = 0.0015;
+        const delta = -e.deltaY * zoomSpeed;
+
+        setViewport(prev => ({
+            ...prev,
+            // Using a multiplier makes the zoom feel consistent at all levels
+            scale: clamp(prev.scale * (1 + delta), 0.15, 3)
+        }));
+    };
+
+    // 3. Refined Mouse Move (Smooth Panning)
+    const handleMouseMove = (e: React.MouseEvent) => {
+        if (isPanning) {
+            // We divide by viewport.scale so the drag "sticks" to the mouse
+            const dx = (e.clientX - startPan.x) / viewport.scale;
+            const dy = (e.clientY - startPan.y) / viewport.scale;
+
+            setViewport(prev => ({
+                ...prev,
+                x: prev.x + dx,
+                y: prev.y + dy,
+            }));
+
+            setStartPan({ x: e.clientX, y: e.clientY });
+        }
+    };
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+        if (e.button === 0) { // Left click only
+            setIsPanning(true);
+            setStartPan({ x: e.clientX, y: e.clientY });
+        }
+    };
+
+
+    const handleMouseUp = () => {
+        setIsPanning(false);
+    };
+
+    const handleZoomIn = () => {
+        setViewport({ ...viewport, scale: Math.min(viewport.scale + 0.2, 3) });
+    };
+
+    const handleZoomOut = () => {
+        setViewport({ ...viewport, scale: Math.max(viewport.scale - 0.2, 0.1) });
+    };
+
+    const handleResetView = () => {
+        setViewport({ x: 0, y: 0, scale: 0.6 });
+    };
 
     return (
         <div style={styles.app}>
-            {/* Animated Particle Background */}
-            {/* <div style={styles.particleContainer}>
-                {particles.map((particle) => (
-                    <div
-                        key={particle.id}
-                        style={{
-                            ...styles.particle,
-                            left: `${particle.x}%`,
-                            top: `${particle.y}%`,
-                            width: particle.size,
-                            height: particle.size,
-                            animationDuration: `${particle.speed}s`,
-                        }}
-                    />
-                ))}
-            </div> */}
-
             {/* Transition Overlay */}
             {transitioning && (
                 <div style={styles.transitionOverlay}>
@@ -164,93 +257,148 @@ export default function NetworkTopology() {
 
             {/* TOPOLOGY VIEW */}
             {!selectedStation && (
-                <div style={styles.topologyView}>
+                <div
+                    style={styles.topologyView}
+                    onWheel={handleWheel}
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseUp}
+                >
+                    {/* Header */}
                     <div style={styles.header}>
                         <h1 style={styles.title}>
                             <span style={styles.titleIcon}>🛰️</span>
                             EDGE NETWORK MANAGEMENT SYSTEM
                         </h1>
-                        <div style={styles.subtitle}>Divisional HQ - Network Topology</div>
-                    </div>
-
-                    {/* Central HQ Node */}
-                    <div style={styles.hqContainer}>
-                        <div style={styles.hq}>
-                            <div style={styles.hqPulse}></div>
-                            <div style={styles.hqIcon}>🏢</div>
-                            <div style={styles.hqLabel}>DIVISIONAL HQ</div>
-                            <div style={styles.hqStatus}>MASTER NODE</div>
+                        <div style={styles.subtitle}>
+                            Divisional HQ - Network Topology ({stations.length} Stations)
                         </div>
                     </div>
 
-                    {/* Connection Lines */}
-                    <svg style={styles.connectionSvg}>
-                        {stations.map((station, idx) => {
-                            const angle = (idx / stations.length) * 2 * Math.PI - Math.PI / 2;
-                            const x1 = 50;
-                            const y1 = 30;
-                            const x2 = 50 + Math.cos(angle) * 35;
-                            const y2 = 70 + Math.sin(angle) * 25;
-                            return (
-                                <line
-                                    key={station.id}
-                                    x1={`${x1}%`}
-                                    y1={`${y1}%`}
-                                    x2={`${x2}%`}
-                                    y2={`${y2}%`}
-                                    stroke={getStatusColor(getStationOverallStatus(station))}
-                                    strokeWidth="2"
-                                    strokeDasharray="5,5"
-                                    style={styles.connectionLine}
-                                />
-                            );
-                        })}
-                    </svg>
+                    {/* Zoom Controls */}
+                    <div style={styles.zoomControls}>
+                        <button style={styles.zoomButton} onClick={handleZoomIn} title="Zoom In">
+                            ➕
+                        </button>
+                        <button style={styles.zoomButton} onClick={handleZoomOut} title="Zoom Out">
+                            ➖
+                        </button>
+                        <button style={styles.zoomButton} onClick={handleResetView} title="Reset View">
+                            🎯
+                        </button>
+                        <div style={styles.zoomLevel}>{Math.round(viewport.scale * 100)}%</div>
+                    </div>
 
-                    {/* Stations arranged in a circle */}
-                    <div style={styles.stationsContainer}>
-                        {stations.map((station, idx) => {
-                            const angle = (idx / stations.length) * 2 * Math.PI - Math.PI / 2;
-                            const x = 50 + Math.cos(angle) * 35;
-                            const y = 70 + Math.sin(angle) * 25;
-                            const overallStatus = getStationOverallStatus(station);
-                            const statusColor = getStatusColor(overallStatus);
+                    {/* Instructions */}
+                    <div style={styles.instructions}>
+                        🖱️ Drag to pan • Scroll to zoom • Click stations for details
+                    </div>
 
-                            return (
-                                <div
-                                    key={station.id}
-                                    style={{
-                                        ...styles.stationNode,
-                                        left: `${x}%`,
-                                        top: `${y}%`,
-                                        borderColor: statusColor,
-                                        boxShadow: `0 0 30px ${statusColor}`,
-                                    }}
-                                    onClick={() => handleStationClick(station)}
-                                >
-                                    <div
-                                        style={{
-                                            ...styles.stationPulse,
-                                            borderColor: statusColor,
-                                        }}
-                                    ></div>
-                                    <div style={styles.stationIcon}>📍</div>
-                                    <div style={styles.stationName}>{station.name}</div>
-                                    <div style={styles.stationLocation}>{station.location}</div>
-                                    <div
-                                        style={{
-                                            ...styles.stationStatus,
-                                            color: statusColor,
-                                        }}
-                                    >
-                                        {overallStatus.toUpperCase()}
-                                    </div>
-                                    <div style={styles.deviceCount}>
-                                        {station.devices.length} Devices
-                                    </div>
+                    {/* Canvas Container */}
+                    <div
+                        ref={canvasRef}
+                        style={{
+                            ...styles.canvasContainer,
+                            cursor: isPanning ? 'grabbing' : 'grab',
+                            // transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.scale})`,
+                            transition: isPanning ? 'none' : 'transform 0.2s ease-out'
+                        }}
+                    >
+                        <div
+                            style={{
+                                ...styles.canvas,
+                                transform: `translate(calc(-50% + ${viewport.x}px), ${viewport.y}px) scale(${viewport.scale})`,
+                            }}
+                        >
+                            {/* SVG for Connection Lines */}
+                            <svg
+                                ref={svgRef}
+                                style={{
+                                    ...styles.connectionSvg,
+                                    width: treeLayout.svgWidth,
+                                    height: treeLayout.svgHeight,
+                                }}
+                            >
+                                {treeLayout.nodes.map((node, idx) => {
+                                    const overallStatus = getStationOverallStatus(node.station);
+                                    return (
+                                        <line
+                                            key={node.station.id}
+                                            x1={treeLayout.root.x}
+                                            y1={treeLayout.root.y}
+                                            x2={node.x}
+                                            y2={node.y}
+                                            stroke={getStatusColor(overallStatus)}
+                                            strokeWidth="2"
+                                            strokeDasharray="5,5"
+                                            style={styles.connectionLine}
+                                        />
+                                    );
+                                })}
+                            </svg>
+
+                            {/* Central HQ Node */}
+                            <div
+                                style={{
+                                    ...styles.hqWrapper,
+                                    left: treeLayout.root.x,
+                                    top: treeLayout.root.y,
+                                }}
+                            >
+                                <div style={styles.hq}>
+                                    <div style={styles.hqPulse}></div>
+                                    <div style={styles.hqIcon}>🏢</div>
+                                    <div style={styles.hqLabel}>DIVISIONAL HQ</div>
+                                    <div style={styles.hqStatus}>MASTER NODE</div>
                                 </div>
-                            );
-                        })}
+                            </div>
+
+                            {/* Stations */}
+                            {treeLayout.nodes.map((node, idx) => {
+                                const overallStatus = getStationOverallStatus(node.station);
+                                const statusColor = getStatusColor(overallStatus);
+
+                                return (
+                                    <div
+                                        key={node.station.id}
+                                        style={{
+                                            ...styles.stationNode,
+                                            left: node.x,
+                                            top: node.y,
+                                            borderColor: statusColor,
+                                            boxShadow: `0 0 30px ${statusColor}`,
+                                        }}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleStationClick(node.station);
+                                        }}
+                                        onMouseDown={(e) => e.stopPropagation()}
+                                    >
+                                        <div
+                                            style={{
+                                                ...styles.stationPulse,
+                                                borderColor: statusColor,
+                                            }}
+                                        ></div>
+                                        <div style={styles.stationIcon}>📍</div>
+                                        <div style={styles.stationName}>{node.station.name}</div>
+                                        <div style={styles.stationLocation}>{node.station.location}</div>
+                                        <div
+                                            style={{
+                                                ...styles.stationStatus,
+                                                color: statusColor,
+                                            }}
+                                        >
+                                            {overallStatus.toUpperCase()}
+                                        </div>
+                                        <div style={styles.deviceCount}>
+                                            {node.station.devices.length} Devices
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
             )}
@@ -527,24 +675,6 @@ const styles: { [key: string]: CSSProperties } = {
         overflow: "hidden",
     },
 
-    // Particles
-    particleContainer: {
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        pointerEvents: "none",
-        zIndex: 0,
-    },
-    particle: {
-        position: "absolute",
-        backgroundColor: "#3b82f6",
-        borderRadius: "50%",
-        opacity: 0.3,
-        animation: "float 20s infinite linear",
-    },
-
     // Transition Overlay
     transitionOverlay: {
         position: "fixed",
@@ -579,16 +709,20 @@ const styles: { [key: string]: CSSProperties } = {
     topologyView: {
         position: "relative",
         minHeight: "100vh",
-        padding: 40,
-        zIndex: 1,
-        animation: "zoomIn 0.8s ease",
+        overflow: "hidden",
+        userSelect: "none",
     },
     header: {
+        position: "absolute",
+        top: 20,
+        left: 0,
+        right: 0,
         textAlign: "center",
-        marginBottom: 60,
+        zIndex: 100,
+        pointerEvents: "none",
     },
     title: {
-        fontSize: 42,
+        fontSize: 36,
         fontWeight: 700,
         background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
         WebkitBackgroundClip: "text",
@@ -600,22 +734,89 @@ const styles: { [key: string]: CSSProperties } = {
         marginRight: 15,
     },
     subtitle: {
-        fontSize: 16,
+        fontSize: 14,
         color: "#94a3b8",
-        letterSpacing: 3,
+        letterSpacing: 2,
         textTransform: "uppercase",
     },
 
-    // HQ Node
-    hqContainer: {
+    // Zoom Controls
+    zoomControls: {
+        position: "fixed",
+        top: 120,
+        right: 20,
         display: "flex",
+        flexDirection: "column",
+        gap: 10,
+        zIndex: 100,
+    },
+    zoomButton: {
+        width: 50,
+        height: 50,
+        background: "linear-gradient(135deg, #1e293b, #0f172a)",
+        border: "2px solid #3b82f6",
+        borderRadius: 12,
+        color: "#fff",
+        fontSize: 20,
+        cursor: "pointer",
+        transition: "all 0.3s ease",
+        display: "flex",
+        alignItems: "center",
         justifyContent: "center",
-        marginBottom: 80,
+    },
+    zoomLevel: {
+        textAlign: "center",
+        fontSize: 12,
+        color: "#94a3b8",
+        padding: "8px 12px",
+        background: "linear-gradient(135deg, #1e293b, #0f172a)",
+        borderRadius: 8,
+        border: "1px solid #334155",
+    },
+
+    // Instructions
+    instructions: {
+        position: "fixed",
+        bottom: 20,
+        left: "50%",
+        transform: "translateX(-50%)",
+        padding: "12px 24px",
+        background: "linear-gradient(135deg, #1e293b, #0f172a)",
+        border: "1px solid #3b82f6",
+        borderRadius: 12,
+        fontSize: 14,
+        color: "#94a3b8",
+        zIndex: 100,
+        pointerEvents: "none",
+    },
+
+    // Canvas Container
+    canvasContainer: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        overflow: "hidden",
+        // backgroundColor: "#b1b8ca",
+    },
+    canvas: {
+        position: "absolute",
+        top: 0,
+        transformOrigin: "top left",
+        transition: "transform 0.1s ease-out",
+        willChange: "transform",
+    },
+
+    // HQ Node
+    hqWrapper: {
+        position: "absolute",
+        transform: "translate(-50%, -50%)",
     },
     hq: {
         position: "relative",
-        width: 200,
-        height: 200,
+        width: 180,
+        height: 180,
         background: "linear-gradient(135deg, #1e293b, #0f172a)",
         borderRadius: "50%",
         border: "3px solid #3b82f6",
@@ -639,13 +840,13 @@ const styles: { [key: string]: CSSProperties } = {
         marginBottom: 10,
     },
     hqLabel: {
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: 700,
         letterSpacing: 1,
         marginBottom: 5,
     },
     hqStatus: {
-        fontSize: 11,
+        fontSize: 10,
         color: "#3b82f6",
         letterSpacing: 1,
     },
@@ -655,32 +856,26 @@ const styles: { [key: string]: CSSProperties } = {
         position: "absolute",
         top: 0,
         left: 0,
-        width: "100%",
-        height: "100%",
         pointerEvents: "none",
-        zIndex: 0,
+        overflow: "visible",
     },
     connectionLine: {
         animation: "dash 3s linear infinite",
     },
 
     // Stations
-    stationsContainer: {
-        position: "relative",
-        height: 600,
-    },
     stationNode: {
         position: "absolute",
         transform: "translate(-50%, -50%)",
-        width: 180,
-        padding: 20,
+        width: 160,
+        padding: 16,
         background: "linear-gradient(135deg, #1e293b, #0f172a)",
-        borderRadius: 20,
+        borderRadius: 16,
         border: "2px solid",
         cursor: "pointer",
-        transition: "all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+        transition: "all 0.3s ease",
         animation: "fadeInUp 0.8s ease",
-        zIndex: 1,
+        pointerEvents: "auto",
     },
     stationPulse: {
         position: "absolute",
@@ -689,36 +884,36 @@ const styles: { [key: string]: CSSProperties } = {
         right: -5,
         bottom: -5,
         border: "2px solid",
-        borderRadius: 20,
+        borderRadius: 16,
         animation: "ping 2s infinite",
         pointerEvents: "none",
     },
     stationIcon: {
-        fontSize: 32,
+        fontSize: 28,
         textAlign: "center",
-        marginBottom: 10,
+        marginBottom: 8,
     },
     stationName: {
-        fontSize: 18,
+        fontSize: 15,
         fontWeight: 700,
         textAlign: "center",
-        marginBottom: 5,
+        marginBottom: 4,
     },
     stationLocation: {
-        fontSize: 12,
+        fontSize: 11,
         color: "#94a3b8",
         textAlign: "center",
-        marginBottom: 10,
+        marginBottom: 8,
     },
     stationStatus: {
-        fontSize: 12,
+        fontSize: 11,
         fontWeight: 700,
         textAlign: "center",
-        marginBottom: 5,
+        marginBottom: 4,
         letterSpacing: 1,
     },
     deviceCount: {
-        fontSize: 11,
+        fontSize: 10,
         color: "#64748b",
         textAlign: "center",
     },
@@ -730,6 +925,7 @@ const styles: { [key: string]: CSSProperties } = {
         padding: 40,
         zIndex: 1,
         animation: "slideInRight 0.6s ease",
+        overflowY: "auto",
     },
     backButton: {
         background: "linear-gradient(135deg, #1e293b, #0f172a)",
@@ -752,9 +948,12 @@ const styles: { [key: string]: CSSProperties } = {
         background: "linear-gradient(135deg, #1e293b, #0f172a)",
         borderRadius: 20,
         border: "1px solid #334155",
+        flexWrap: "wrap",
+        gap: 20,
     },
     stationHeaderLeft: {
         flex: 1,
+        minWidth: 250,
     },
     stationTitle: {
         fontSize: 36,
@@ -922,6 +1121,7 @@ const styles: { [key: string]: CSSProperties } = {
         gap: 20,
         padding: 40,
         borderBottom: "1px solid #334155",
+        flexWrap: "wrap",
     },
     deviceDetailIcon: {
         fontSize: 64,
@@ -1042,11 +1242,6 @@ const styles: { [key: string]: CSSProperties } = {
 // Add CSS animations
 const styleSheet = document.createElement("style");
 styleSheet.textContent = `
-  @keyframes float {
-    0%, 100% { transform: translateY(0) translateX(0); }
-    50% { transform: translateY(-20px) translateX(10px); }
-  }
-  
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -1076,11 +1271,6 @@ styleSheet.textContent = `
     to { opacity: 1; transform: translateY(0); }
   }
   
-  @keyframes zoomIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
-  }
-  
   @keyframes slideInRight {
     from { opacity: 0; transform: translateX(100px); }
     to { opacity: 1; transform: translateX(0); }
@@ -1097,16 +1287,17 @@ styleSheet.textContent = `
   }
   
   div[style*="stationNode"]:hover {
-    transform: translate(-50%, -50%) scale(1.1) !important;
+    transform: translate(-50%, -50%) scale(1.15) !important;
   }
   
   div[style*="deviceCard"]:hover {
     transform: translateY(-10px) scale(1.05) !important;
   }
   
-  div[style*="backButton"]:hover,
-  div[style*="closeButton"]:hover {
-    transform: scale(1.05);
+  button[style*="zoomButton"]:hover,
+  button[style*="backButton"]:hover,
+  button[style*="closeButton"]:hover {
+    transform: scale(1.1);
     box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
   }
 `;
