@@ -44,152 +44,35 @@ export default function NetworkTopology() {
         setParticles(newParticles);
     }, []);
 
-    const stations: Station[] = [
-        {
-            id: "stA",
-            name: "Station A",
-            status: "online",
-            location: "Terminal 1",
-            devices: [
-                { name: "MLDB-01", type: "MLDB", status: "online", health: 98 },
-                { name: "PFD-01", type: "PFD", status: "online", health: 95 },
-                { name: "AGDB-01", type: "AGDB", status: "warning", health: 72 },
-                { name: "CGDB-01", type: "CGDB", status: "online", health: 100 },
-                { name: "VDU-Display-01", type: "Video Display", status: "online", health: 88 },
-                { name: "VDU-Display-02", type: "Video Display", status: "online", health: 92 },
-                { name: "MLDB-02", type: "MLDB", status: "online", health: 97 },
-                { name: "PFD-02", type: "PFD", status: "warning", health: 68 },
-                { name: "AGDB-02", type: "AGDB", status: "online", health: 94 },
-                { name: "CGDB-02", type: "CGDB", status: "online", health: 96 },
-            ],
-        },
-        {
-            id: "stB",
-            name: "Station B",
-            status: "warning",
-            location: "Terminal 2",
-            devices: [
-                { name: "MLDB-01", type: "MLDB", status: "warning", health: 65 },
-                { name: "PFD-01", type: "PFD", status: "online", health: 89 },
-                { name: "AGDB-01", type: "AGDB", status: "online", health: 91 },
-                { name: "CGDB-01", type: "CGDB", status: "warning", health: 70 },
-                { name: "VDU-Display-01", type: "Video Display", status: "online", health: 85 },
-                { name: "VDU-Display-02", type: "Video Display", status: "warning", health: 62 },
-                { name: "MLDB-02", type: "MLDB", status: "online", health: 93 },
-                { name: "PFD-02", type: "PFD", status: "online", health: 87 },
-                { name: "AGDB-02", type: "AGDB", status: "online", health: 90 },
-                { name: "CGDB-02", type: "CGDB", status: "online", health: 88 },
-            ],
-        },
-        {
-            id: "stC",
-            name: "Station C",
-            status: "critical",
-            location: "Terminal 3",
-            devices: [
-                { name: "MLDB-01", type: "MLDB", status: "down", health: 12 },
-                { name: "PFD-01", type: "PFD", status: "down", health: 8 },
-                { name: "AGDB-01", type: "AGDB", status: "warning", health: 45 },
-                { name: "CGDB-01", type: "CGDB", status: "online", health: 82 },
-                { name: "VDU-Display-01", type: "Video Display", status: "down", health: 15 },
-                { name: "VDU-Display-02", type: "Video Display", status: "online", health: 78 },
-                { name: "MLDB-02", type: "MLDB", status: "warning", health: 58 },
-                { name: "PFD-02", type: "PFD", status: "online", health: 84 },
-                { name: "AGDB-02", type: "AGDB", status: "online", health: 91 },
-                { name: "CGDB-02", type: "CGDB", status: "warning", health: 66 },
-            ],
-        },
-        {
-            id: "stD",
-            name: "Station D",
-            status: "online",
-            location: "Terminal 4",
-            devices: [
-                { name: "MLDB-01", type: "MLDB", status: "online", health: 99 },
-                { name: "PFD-01", type: "PFD", status: "online", health: 97 },
-                { name: "AGDB-01", type: "AGDB", status: "online", health: 95 },
-                { name: "CGDB-01", type: "CGDB", status: "online", health: 98 },
-                { name: "VDU-Display-01", type: "Video Display", status: "online", health: 94 },
-                { name: "VDU-Display-02", type: "Video Display", status: "online", health: 96 },
-                { name: "MLDB-02", type: "MLDB", status: "online", health: 93 },
-                { name: "PFD-02", type: "PFD", status: "online", health: 91 },
-                { name: "AGDB-02", type: "AGDB", status: "online", health: 89 },
-                { name: "CGDB-02", type: "CGDB", status: "online", health: 92 },
-            ],
-        },
-        {
-            id: "stE",
-            name: "Station E",
-            status: "online",
-            location: "Terminal 5",
-            devices: [
-                { name: "MLDB-01", type: "MLDB", status: "online", health: 99 },
-                { name: "PFD-01", type: "PFD", status: "online", health: 97 },
-                { name: "AGDB-01", type: "AGDB", status: "online", health: 95 },
-                { name: "CGDB-01", type: "CGDB", status: "online", health: 98 },
-                { name: "VDU-Display-01", type: "Video Display", status: "online", health: 94 },
-                { name: "VDU-Display-02", type: "Video Display", status: "online", health: 96 },
-                { name: "MLDB-02", type: "MLDB", status: "online", health: 93 },
-                { name: "PFD-02", type: "PFD", status: "online", health: 91 },
-                { name: "AGDB-02", type: "AGDB", status: "online", health: 89 },
-                { name: "CGDB-02", type: "CGDB", status: "online", health: 92 },
-            ],
-        },
-        {
-            id: "stF",
-            name: "Station F",
-            status: "online",
-            location: "Terminal 6",
-            devices: [
-                { name: "MLDB-01", type: "MLDB", status: "online", health: 99 },
-                { name: "PFD-01", type: "PFD", status: "online", health: 97 },
-                { name: "AGDB-01", type: "AGDB", status: "online", health: 95 },
-                { name: "CGDB-01", type: "CGDB", status: "online", health: 98 },
-                { name: "VDU-Display-01", type: "Video Display", status: "online", health: 94 },
-                { name: "VDU-Display-02", type: "Video Display", status: "online", health: 96 },
-                { name: "MLDB-02", type: "MLDB", status: "online", health: 93 },
-                { name: "PFD-02", type: "PFD", status: "online", health: 91 },
-                { name: "AGDB-02", type: "AGDB", status: "online", health: 89 },
-                { name: "CGDB-02", type: "CGDB", status: "online", health: 92 },
-            ],
-        },
-        {
-            id: "stG",
-            name: "Station G",
-            status: "online",
-            location: "Terminal 7",
-            devices: [
-                { name: "MLDB-01", type: "MLDB", status: "down", health: 99 },
-                { name: "PFD-01", type: "PFD", status: "online", health: 97 },
-                { name: "AGDB-01", type: "AGDB", status: "online", health: 95 },
-                { name: "CGDB-01", type: "CGDB", status: "down", health: 98 },
-                { name: "VDU-Display-01", type: "Video Display", status: "online", health: 94 },
-                { name: "VDU-Display-02", type: "Video Display", status: "online", health: 96 },
-                { name: "MLDB-02", type: "MLDB", status: "online", health: 93 },
-                { name: "PFD-02", type: "PFD", status: "down", health: 91 },
-                { name: "AGDB-02", type: "AGDB", status: "online", health: 89 },
-                { name: "CGDB-02", type: "CGDB", status: "online", health: 92 },
-            ],
-        },
-        {
-            id: "stH",
-            name: "Station H",
-            status: "online",
-            location: "Terminal 8",
-            devices: [
-                { name: "MLDB-01", type: "MLDB", status: "online", health: 99 },
-                { name: "PFD-01", type: "PFD", status: "online", health: 97 },
-                { name: "AGDB-01", type: "AGDB", status: "online", health: 95 },
-                { name: "CGDB-01", type: "CGDB", status: "online", health: 98 },
-                { name: "VDU-Display-01", type: "Video Display", status: "online", health: 94 },
-                { name: "VDU-Display-02", type: "Video Display", status: "online", health: 96 },
-                { name: "MLDB-02", type: "MLDB", status: "online", health: 93 },
-                { name: "PFD-02", type: "PFD", status: "online", health: 91 },
-                { name: "AGDB-02", type: "AGDB", status: "online", health: 89 },
-                { name: "CGDB-02", type: "CGDB", status: "online", health: 92 },
-            ],
-        },
+    const generateDevices = (): Device[] => [
+        { name: "MLDB-01", type: "MLDB", status: "online", health: 98 },
+        { name: "PFD-01", type: "PFD", status: "online", health: 95 },
+        { name: "AGDB-01", type: "AGDB", status: "warning", health: 72 },
+        { name: "CGDB-01", type: "CGDB", status: "online", health: 100 },
+        { name: "VDU-Display-01", type: "Video Display", status: "online", health: 88 },
+        { name: "VDU-Display-02", type: "Video Display", status: "online", health: 92 },
+        { name: "MLDB-02", type: "MLDB", status: "online", health: 97 },
+        { name: "PFD-02", type: "PFD", status: "warning", health: 68 },
+        { name: "AGDB-02", type: "AGDB", status: "online", health: 94 },
+        { name: "CGDB-02", type: "CGDB", status: "online", health: 96 },
     ];
+    const generateStations = (count: number): Station[] => {
+        return Array.from({ length: count }, (_, index) => {
+            const stationChar = String.fromCharCode(65 + index); // A, B, C...
+
+            return {
+                id: `st${stationChar}`,
+                name: `Station ${stationChar}`,
+                status: index === 2 ? "critical" : index === 1 ? "warning" : "online",
+                location: `Terminal ${index + 1}`,
+                devices: generateDevices(),
+            };
+        });
+    };
+
+
+    const stations = generateStations(20); // A → L
+
 
     const getStatusColor = (status: DeviceStatus): string => {
         switch (status) {
