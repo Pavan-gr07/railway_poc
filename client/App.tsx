@@ -15,6 +15,8 @@ import Events from "./pages/Events";
 import Announcements from "./pages/Announcements";
 import Config from "./pages/Config";
 import NotFound from "./pages/NotFound";
+import NetworkTopology from "./pages/NetworkTopology";
+import GIS from "./pages/GIS";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +30,8 @@ const AppContent = () => (
       <Route path="/events" element={<Events />} />
       <Route path="/announcements" element={<Announcements />} />
       <Route path="/config" element={<Config />} />
+      <Route path="/network" element={<NetworkTopology />} />
+      <Route path="/gis" element={<GIS />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   </MainLayout>
