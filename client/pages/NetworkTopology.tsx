@@ -78,7 +78,8 @@ export default function NetworkTopology() {
         nodes: { station: Station; x: number; y: number }[],
         root: { x: number; y: number },
         svgWidth: number,
-        svgHeight: number
+        svgHeight: number,
+        bounds: { minX: number, maxX: number, minY: number, maxY: number }
     } => {
         const horizontalSpacing = 250;
         const verticalSpacing = 300;
@@ -113,16 +114,24 @@ export default function NetworkTopology() {
             currentLevel++;
         }
 
-        // Calculate SVG dimensions based on actual node positions
-        const maxY = Math.max(...nodes.map(n => n.y)) + 200;
-        const svgWidth = 4000;
-        const svgHeight = maxY;
+        // Calculate bounds based on actual node positions
+        const allX = nodes.map(n => n.x).concat(rootX);
+        const allY = nodes.map(n => n.y).concat(rootY);
+
+        const minX = Math.min(...allX) - 200;
+        const maxX = Math.max(...allX) + 200;
+        const minY = Math.min(...allY) - 200;
+        const maxY = Math.max(...allY) + 200;
+
+        const svgWidth = maxX - minX;
+        const svgHeight = maxY - minY;
 
         return {
             nodes,
             root: { x: rootX, y: rootY },
             svgWidth,
-            svgHeight
+            svgHeight,
+            bounds: { minX, maxX, minY, maxY }
         };
     };
 
@@ -191,17 +200,68 @@ export default function NetworkTopology() {
     // 1. Add a clamp helper to keep the canvas in view
     const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
 
+
+    const getPanBoundaries = (scale: number) => {
+        if (!canvasRef.current) return { minX: -Infinity, maxX: Infinity, minY: -Infinity, maxY: Infinity };
+
+        const containerWidth = canvasRef.current.clientWidth;
+        const containerHeight = canvasRef.current.clientHeight;
+
+        // Content dimensions at current scale
+        const contentWidth = treeLayout.svgWidth * scale;
+        const contentHeight = treeLayout.svgHeight * scale;
+
+        // Calculate boundaries to keep content visible
+        // Allow panning only within content bounds with some padding
+        const padding = 100;
+
+        return {
+            minX: -(contentWidth - containerWidth / 2) - padding,
+            maxX: containerWidth / 2 + padding,
+            minY: -padding,
+            maxY: contentHeight - containerHeight + padding
+        };
+    };
     // 2. Refined Wheel Handler (Smooth Zoom)
     const handleWheel = (e: React.WheelEvent) => {
         e.preventDefault();
-        const zoomSpeed = 0.0015;
+
+        if (!canvasRef.current) return;
+
+        const container = canvasRef.current;
+        const rect = container.getBoundingClientRect();
+
+        // Mouse position relative to container
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        // Container center
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        // Use center as zoom point instead of mouse position
+        const zoomPointX = centerX;
+        const zoomPointY = centerY;
+
+        const zoomSpeed = 0.001;
         const delta = -e.deltaY * zoomSpeed;
 
-        setViewport(prev => ({
-            ...prev,
-            // Using a multiplier makes the zoom feel consistent at all levels
-            scale: clamp(prev.scale * (1 + delta), 0.15, 3)
-        }));
+        setViewport(prev => {
+            const newScale = clamp(prev.scale * (1 + delta), 0.2, 2);
+            const scaleDiff = newScale - prev.scale;
+
+            // Adjust position to zoom towards center
+            const newX = prev.x - (zoomPointX - rect.width / 2) * scaleDiff / prev.scale;
+            const newY = prev.y - zoomPointY * scaleDiff / prev.scale;
+
+            const boundaries = getPanBoundaries(newScale);
+
+            return {
+                scale: newScale,
+                x: clamp(newX, boundaries.minX, boundaries.maxX),
+                y: clamp(newY, boundaries.minY, boundaries.maxY)
+            };
+        });
     };
 
     // 3. Refined Mouse Move (Smooth Panning)
