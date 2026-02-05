@@ -17,6 +17,7 @@ import Config from "./pages/Config";
 import NotFound from "./pages/NotFound";
 import NetworkTopology from "./pages/NetworkTopology";
 import GIS from "./pages/GIS";
+import CNMSGISView from "./pages/CentralNMS";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const AppContent = () => (
       <Route path="/config" element={<Config />} />
       <Route path="/network" element={<NetworkTopology />} />
       <Route path="/gis" element={<GIS />} />
+      <Route path="/central" element={<CNMSGISView />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   </MainLayout>

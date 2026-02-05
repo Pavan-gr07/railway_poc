@@ -31,6 +31,7 @@ const navigationItems = [
   { label: "Configuration", path: "/config", icon: Settings },
   { label: "Network Topology", path: "/network", icon: Network },
   { label: "GIS View", path: "/gis", icon: LocateFixed },
+  { label: "Central NMS", path: "/central", icon: LocateFixed },
 ];
 
 export function MainLayout({ children }: MainLayoutProps) {
